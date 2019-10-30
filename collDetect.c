@@ -15,8 +15,8 @@ COLL_FRAME_CALC_RET calculateNextCollisionFrame(jint * collFrame, const collActo
     const jintLine * point = &ca1->shape.point; 
     const jintAxPlLine * line = &ca2->shape.line; 
 
-    printf("(%d - %d) * %d / (%d - %d)\n\n", line->rStart.x, point->rStart.x, point->tScale, point->sTarg.x, point->rStart.x);
-    int frame_coll = (line->rStart.x - point->rStart.x)  * point->tScale / (point->sTarg.x - point->rStart.x);
+    int frame_coll = (line->rStart.x - point->rStart.x)  * point->tScale / (point->sTarg.x /*- point->rStart.x*/);
+    printf("(%d - %d) * %d / %d = %d\n\n", line->rStart.x, point->rStart.x, point->tScale, point->sTarg.x, frame_coll);
 
     // TODO check that point actually lies inbetween the end-points of the line
 
