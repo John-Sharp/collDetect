@@ -1,6 +1,8 @@
 #ifndef COLL_DETECT_H
 #define COLL_DETECT_H
 
+#include <jTypes.h>
+
 typedef enum COLL_ACTOR_TYPE
 {
     COLL_ACTOR_TYPE_POINT,
