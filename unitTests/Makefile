@@ -2,8 +2,8 @@ CC = gcc
 
 CFLAGS = -g -Wall -lm -I../../jTypes --coverage
 
-all: main.c ../collDetect.h ../collDetect.c
-	$(CC) $(CFLAGS) main.c ../collDetect.c -o unitTests
+all: main.c pointVLine.h pointVLine.c pointHLine.h pointHLine.c ../collDetect.h ../collDetect.c
+	$(CC) $(CFLAGS) main.c ../collDetect.c pointVLine.c pointHLine.c -o unitTests
 	./unitTests
 	gcov collDetect.c
 
