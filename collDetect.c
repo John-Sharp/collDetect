@@ -11,8 +11,8 @@ typedef enum RELATION
 
 RELATION pointLineRelationV(jint frame, const jintLine * point, const jintAxPlLine * line)
 {
-    jint scaledUpPointY = point->rStart.y * point->tScale + frame * point->sTarg.y;
-    jint scaledUpLineBottom = line->rStart.y * point->tScale;
+    jint scaledUpPointY = point->rStart.v[1] * point->tScale + frame * point->sTarg.v[1];
+    jint scaledUpLineBottom = line->rStart.v[1] * point->tScale;
     jint scaledUpLineTop = scaledUpLineBottom + line->length * point->tScale;
 
     if (scaledUpPointY > scaledUpLineTop)
@@ -26,8 +26,8 @@ RELATION pointLineRelationV(jint frame, const jintLine * point, const jintAxPlLi
 
 RELATION pointLineRelationH(jint frame, const jintLine * point, const jintAxPlLine * line)
 {
-    jint scaledUpPointX = point->rStart.x * point->tScale + frame * point->sTarg.x;
-    jint scaledUpLineBottom = line->rStart.x * point->tScale;
+    jint scaledUpPointX = point->rStart.v[0] * point->tScale + frame * point->sTarg.v[0];
+    jint scaledUpLineBottom = line->rStart.v[0] * point->tScale;
     jint scaledUpLineTop = scaledUpLineBottom + line->length * point->tScale;
 
     if (scaledUpPointX > scaledUpLineTop)
@@ -63,8 +63,8 @@ COLL_FRAME_CALC_RET calculateNextCollisionFrame(jint * collFrame, const collActo
 
 COLL_FRAME_CALC_RET CNCFPointVline(jint * collFrame, const jintLine * point, const jintAxPlLine * line)
 {
-    int frame_coll = (line->rStart.x - point->rStart.x)  * point->tScale / point->sTarg.x;
-    printf("(%d - %d) * %d / %d = %d\n\n", line->rStart.x, point->rStart.x, point->tScale, point->sTarg.x, frame_coll);
+    int frame_coll = (line->rStart.v[0] - point->rStart.v[0])  * point->tScale / point->sTarg.v[0];
+    printf("(%d - %d) * %d / %d = %d\n\n", line->rStart.v[0], point->rStart.v[0], point->tScale, point->sTarg.v[0], frame_coll);
 
     // check that point actually lies inbetween the end-points of the line
     // if both positions at point `frame_coll` and `frame_coll` + 1 
@@ -88,8 +88,8 @@ COLL_FRAME_CALC_RET CNCFPointVline(jint * collFrame, const jintLine * point, con
 
 COLL_FRAME_CALC_RET CNCFPointHline(jint * collFrame, const jintLine * point, const jintAxPlLine * line)
 {
-    int frame_coll = (line->rStart.y - point->rStart.y)  * point->tScale / point->sTarg.y;
-    printf("(%d - %d) * %d / %d = %d\n\n", line->rStart.y, point->rStart.y, point->tScale, point->sTarg.y, frame_coll);
+    int frame_coll = (line->rStart.v[1] - point->rStart.v[1])  * point->tScale / point->sTarg.v[1];
+    printf("(%d - %d) * %d / %d = %d\n\n", line->rStart.v[1], point->rStart.v[1], point->tScale, point->sTarg.v[1], frame_coll);
 
     // check that point actually lies inbetween the end-points of the line
     // if both positions at point `frame_coll` and `frame_coll` + 1 

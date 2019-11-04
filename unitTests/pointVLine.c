@@ -10,8 +10,8 @@ void testMissesAbove()
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
             .point = {
-                .rStart = {10, 10},
-                .sTarg = {5,2},
+                .rStart = {{10, 10}},
+                .sTarg = {{5,2}},
                 .tScale = 6
             }
         }
@@ -22,7 +22,7 @@ void testMissesAbove()
         .shape = {
             .line = {
                 .direction = AX_PL_DIR_X,
-                .rStart = {15,0},
+                .rStart = {{15,0}},
                 .length = 11
             }
         }
@@ -45,8 +45,8 @@ void testMissesBelow()
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
             .point = {
-                .rStart = {10, 10},
-                .sTarg = {5,2},
+                .rStart = {{10, 10}},
+                .sTarg = {{5,2}},
                 .tScale = 6
             }
         }
@@ -57,7 +57,7 @@ void testMissesBelow()
         .shape = {
             .line = {
                 .direction = AX_PL_DIR_X,
-                .rStart = {15,16},
+                .rStart = {{15,16}},
                 .length = 11
             }
         }
@@ -80,8 +80,8 @@ static void testCalculateFrame()
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
             .point = {
-                .rStart = {10, 10},
-                .sTarg = {5,2},
+                .rStart = {{10, 10}},
+                .sTarg = {{5,2}},
                 .tScale = 6
             }
         }
@@ -92,7 +92,7 @@ static void testCalculateFrame()
         .shape = {
             .line = {
                 .direction = AX_PL_DIR_X,
-                .rStart = {15,10},
+                .rStart = {{15,10}},
                 .length = 11
             }
         }
