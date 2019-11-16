@@ -5,13 +5,16 @@
 #include "pointVLine.h"
 #include "pointHLine.h"
 
+#include "VLineVLine.h"
+
 void testUnhandledTypes()
 {
     jint f;
     collActor ca1 = {.type = COLL_ACTOR_TYPE_POINT};
     collActor ca2 = {.type = COLL_ACTOR_TYPE_POINT};
+    jintVec vrel = {.v = {1,1}, .scale = 1};
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &vrel, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_UNHANDLED_TYPES)
     {
@@ -26,4 +29,6 @@ int main()
     testUnhandledTypes();
     subTestsPointVLine();
     subTestsPointHLine();
+    // TODO
+    // subTestsVLineVLine();
 }

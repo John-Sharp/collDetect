@@ -10,11 +10,11 @@ void testMissesRight()
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
             .point = {
-                .rStart = {{10, 10}},
-                .sTarg = {{2,5}},
-                .tScale = 6
+                .v = {10, 10},
+                .scale = 1
             }
-        }
+        },
+        .vel = {.v = {2,5}, .scale = 6}
     };
     
     collActor ca2 = {
@@ -25,10 +25,11 @@ void testMissesRight()
                 .rStart = {{0,15}},
                 .length = 11
             }
-        }
+        },
+        .vel = {.v = {0,0}, .scale = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1.vel, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_NO_COLLISION)
     {
@@ -45,11 +46,11 @@ void testMissesLeft()
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
             .point = {
-                .rStart = {{10, 10}},
-                .sTarg = {{2,5}},
-                .tScale = 6
+                .v = {10, 10},
+                .scale = 1
             }
-        }
+        },
+        .vel = {.v = {2,5}, .scale = 6}
     };
     
     collActor ca2 = {
@@ -60,10 +61,11 @@ void testMissesLeft()
                 .rStart = {{16,15}},
                 .length = 11
             }
-        }
+        },
+        .vel = {.v = {0,0}, .scale = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1.vel, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_NO_COLLISION)
     {
@@ -80,11 +82,11 @@ static void testCalculateFrame()
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
             .point = {
-                .rStart = {{10, 10}},
-                .sTarg = {{2,5}},
-                .tScale = 6
+                .v = {10, 10},
+                .scale = 1
             }
-        }
+        },
+        .vel = {.v = {2,5}, .scale = 6}
     };
     
     collActor ca2 = {
@@ -95,10 +97,11 @@ static void testCalculateFrame()
                 .rStart = {{10,15}},
                 .length = 11
             }
-        }
+        },
+        .vel = {.v = {0,0}, .scale = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1.vel, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_OK)
     {
