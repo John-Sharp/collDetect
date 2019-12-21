@@ -21,7 +21,7 @@ void testMissesRight()
         .type = COLL_ACTOR_TYPE_H_LINE,
         .shape = {
             .line = {
-                .direction = AX_PL_DIR_Y,
+                .direction = AX_PL_DIR_X,
                 .rStart = {{0,15}},
                 .length = 11
             }
@@ -57,7 +57,7 @@ void testMissesLeft()
         .type = COLL_ACTOR_TYPE_H_LINE,
         .shape = {
             .line = {
-                .direction = AX_PL_DIR_Y,
+                .direction = AX_PL_DIR_X,
                 .rStart = {{16,15}},
                 .length = 11
             }
@@ -93,7 +93,7 @@ static void testCalculateFrame()
         .type = COLL_ACTOR_TYPE_H_LINE,
         .shape = {
             .line = {
-                .direction = AX_PL_DIR_Y,
+                .direction = AX_PL_DIR_X,
                 .rStart = {{10,15}},
                 .length = 11
             }

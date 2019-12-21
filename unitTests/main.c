@@ -30,5 +30,5 @@ int main()
     subTestsPointVLine();
     subTestsPointHLine();
     // TODO
-    // subTestsVLineVLine();
+    subTestsVLineVLine();
 }

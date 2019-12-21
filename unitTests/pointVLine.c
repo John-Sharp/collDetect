@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void testMissesAbove()
+static void testMissesAbove()
 {
     jint f;
     collActor ca1 = {
@@ -21,7 +21,7 @@ void testMissesAbove()
         .type = COLL_ACTOR_TYPE_V_LINE,
         .shape = {
             .line = {
-                .direction = AX_PL_DIR_X,
+                .direction = AX_PL_DIR_Y,
                 .rStart = {{15,0}},
                 .length = 11
             }
@@ -57,7 +57,7 @@ void testMissesBelow()
         .type = COLL_ACTOR_TYPE_V_LINE,
         .shape = {
             .line = {
-                .direction = AX_PL_DIR_X,
+                .direction = AX_PL_DIR_Y,
                 .rStart = {{15,16}},
                 .length = 11
             }
@@ -93,7 +93,7 @@ static void testCalculateFrame()
         .type = COLL_ACTOR_TYPE_V_LINE,
         .shape = {
             .line = {
-                .direction = AX_PL_DIR_X,
+                .direction = AX_PL_DIR_Y,
                 .rStart = {{15,10}},
                 .length = 11
             }
