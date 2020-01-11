@@ -78,6 +78,25 @@ jint CNCFPointInfiniteLine(juint axis, const jintVec * vel, const jintVec * poin
     return (linePoint->v[axis] - point->v[axis])  * vel->scale / vel->v[axis];
 }
 
+// given two right angled triangles with orthogonal sides a,b and c,d
+// respectively, return true if the angle between a and the hypotenuse is
+// greater than the angle between d and the hypotenuse
+static int angle1GTangle2(int a, int b, int c, int d)
+{
+    a = a > 0 ? a : -1*a;
+    b = b > 0 ? b : -1*b;
+    c = c > 0 ? c : -1*c;
+    d = d > 0 ? d : -1*d;
+
+    if (b*c == d*a)
+        return 0;
+
+    if (b*c > d*a)
+        return 1;
+
+    return -1;
+}
+
 COLL_FRAME_CALC_RET CNCFPointLine(
         jint * collFrame, juint axis, const jintVec * vrel, const jintVec * point, const jintAxPlLine * line)
 {
@@ -113,24 +132,22 @@ COLL_FRAME_CALC_RET CNCFPointLine(
     if (relationBefore == GT || relationAfter == GT)
     {
         int a = (line->rStart.v[(axis+1)%2] + line->length) - point->v[(axis+1)%2];
-        a = a > 0 ? a : -1*a;
         int b = line->rStart.v[axis] - point->v[axis];
-        b = b > 0 ? b : -1*b;
-        int c = -vrel->v[(axis+1)%2];
-        c = c > 0 ? c : -1*c;
+        int c = vrel->v[(axis+1)%2];
         int d = vrel->v[axis];
-        d = d > 0 ? d : -1*d;
+
+        int theta1GTtheta2 = angle1GTangle2(a, b, c, d);
 
         if (relationBefore == GT)
         {
-            if (a*d > b*c)
+            if (theta1GTtheta2 < 0)
             {
                 return COLL_FRAME_CALC_NO_COLLISION;
             }
         }
         else
         {
-            if (a*d < b*c)
+            if (theta1GTtheta2 > 0)
             {
                 return COLL_FRAME_CALC_NO_COLLISION;
             }
@@ -139,24 +156,22 @@ COLL_FRAME_CALC_RET CNCFPointLine(
     if (relationBefore == LT  || relationAfter == LT)
     {
         int a = line->rStart.v[(axis+1)%2] - point->v[(axis+1)%2];
-        a = a > 0 ? a : -1*a;
         int b = line->rStart.v[axis] - point->v[axis];
-        b = b > 0 ? b : -1*b;
         int c = vrel->v[(axis+1)%2];
-        c = c > 0 ? c : -1*c;
         int d = vrel->v[axis];
-        d = d > 0 ? d : -1*d;
+
+        int theta1GTtheta2 = angle1GTangle2(a, b, c, d);
 
         if (relationBefore == LT)
         {
-            if (a*d > b*c)
+            if (theta1GTtheta2 < 0)
             {
                 return COLL_FRAME_CALC_NO_COLLISION;
             }
         }
         else
         {
-            if (a*d < b*c)
+            if (theta1GTtheta2 > 0)
             {
                 return COLL_FRAME_CALC_NO_COLLISION;
             }
