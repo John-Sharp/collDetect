@@ -81,15 +81,11 @@ jint CNCFPointInfiniteLine(juint axis, const jintVec * vel, const jintVec * poin
 COLL_FRAME_CALC_RET CNCFPointLine(
         jint * collFrame, juint axis, const jintVec * vrel, const jintVec * point, const jintAxPlLine * line)
 {
-    // TODO neaten this up
-    // TODO pass relative velocity into this function
     int frame_coll = CNCFPointInfiniteLine(axis, vrel, point, &line->rStart);
-    printf("(%d - %d) * %d / %d = %d\n\n", line->rStart.v[axis], point->v[axis], vrel->scale, vrel->v[axis],
-            frame_coll);
 
     // check that point actually lies inbetween the end-points of the line
     // if both positions at point `frame_coll` and `frame_coll` + 1 
-    // are above or below the line then we know it doesn't hit, else it does
+    // are above or below the line then we know it doesn't hit, else it might
     RELATION relationBefore = pointLineRelation(frame_coll, (axis+1)%2, vrel, point, line);
     RELATION relationAfter = pointLineRelation(frame_coll + 1, (axis+1)%2, vrel, point, line);
 
@@ -103,11 +99,69 @@ COLL_FRAME_CALC_RET CNCFPointLine(
         return COLL_FRAME_CALC_NO_COLLISION;
     }
 
-    // TODO in cases where GT->LT and visa versa, need to compare the angle between the 
-    // point before collision and after collision and the (axis+1)%2 (theta1) and the 
-    // angle between the point before collision and the end of the line that is
-    // passed during the collision and the (axis+1)%2 (theta2). If theta1 >
-    // theta2, then there is no collision
+    if (relationBefore == EQ && relationAfter == EQ)
+    {
+        *collFrame = frame_coll;
+        return COLL_FRAME_CALC_OK;
+    }
+
+    // in cases where GT->(LT||EQ) and LT->(GT||EQ), need to compare the angle
+    // between the point before collision and after collision and the
+    // (axis+1)%2 (:= theta1) and the angle between the point before collision
+    // and the end of the line that is passed during the collision and the
+    // (axis+1)%2 (:= theta2). If theta1 > theta2, then there is no collision
+    if (relationBefore == GT || relationAfter == GT)
+    {
+        int a = (line->rStart.v[(axis+1)%2] + line->length) - point->v[(axis+1)%2];
+        a = a > 0 ? a : -1*a;
+        int b = line->rStart.v[axis] - point->v[axis];
+        b = b > 0 ? b : -1*b;
+        int c = -vrel->v[(axis+1)%2];
+        c = c > 0 ? c : -1*c;
+        int d = vrel->v[axis];
+        d = d > 0 ? d : -1*d;
+
+        if (relationBefore == GT)
+        {
+            if (a*d > b*c)
+            {
+                return COLL_FRAME_CALC_NO_COLLISION;
+            }
+        }
+        else
+        {
+            if (a*d < b*c)
+            {
+                return COLL_FRAME_CALC_NO_COLLISION;
+            }
+        }
+    }
+    if (relationBefore == LT  || relationAfter == LT)
+    {
+        int a = line->rStart.v[(axis+1)%2] - point->v[(axis+1)%2];
+        a = a > 0 ? a : -1*a;
+        int b = line->rStart.v[axis] - point->v[axis];
+        b = b > 0 ? b : -1*b;
+        int c = vrel->v[(axis+1)%2];
+        c = c > 0 ? c : -1*c;
+        int d = vrel->v[axis];
+        d = d > 0 ? d : -1*d;
+
+        if (relationBefore == LT)
+        {
+            if (a*d > b*c)
+            {
+                return COLL_FRAME_CALC_NO_COLLISION;
+            }
+        }
+        else
+        {
+            if (a*d < b*c)
+            {
+                return COLL_FRAME_CALC_NO_COLLISION;
+            }
+        }
+    }
 
     *collFrame = frame_coll;
     return COLL_FRAME_CALC_OK;
@@ -138,6 +192,8 @@ COLL_FRAME_CALC_RET CNCFLineLine(
     {
         return COLL_FRAME_CALC_NO_COLLISION;
     }
+
+    // TODO 
 
     return COLL_FRAME_CALC_OK;
 }
