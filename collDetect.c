@@ -183,19 +183,15 @@ COLL_FRAME_CALC_RET CNCFPointLine(
 }
 
 COLL_FRAME_CALC_RET CNCFLineLine(
-        jint * collFrame, juint axis, const jintVec * relVel, // velocity of 1 relative to 2
+        jint * collFrame, juint axis, const jintVec * vrel, // velocity of 1 relative to 2
         const jintAxPlLine * line1, const jintAxPlLine * line2)
 {
-    int frame_coll = CNCFPointInfiniteLine(axis, relVel, &line1->rStart, &line2->rStart);
-
-    // (b, i, a)
-    // bb -> bb => no collision
-    // bb -> bb => no collision
+    int frame_coll = CNCFPointInfiniteLine(axis, vrel, &line1->rStart, &line2->rStart);
 
     RELATION_PAIR relationBefore = lineLineRelation(
-            frame_coll, (axis+1)%2, relVel, line1, line2);
+            frame_coll, (axis+1)%2, vrel, line1, line2);
     RELATION_PAIR relationAfter = lineLineRelation(
-            frame_coll + 1, (axis+1)%2, relVel, line1, line2);
+            frame_coll + 1, (axis+1)%2, vrel, line1, line2);
 
     RELATION_PAIR LT_LT = {{LT, LT}};
     if (memcmp(&relationBefore, &LT_LT, sizeof(RELATION_PAIR)) == 0 && memcmp(&relationAfter, &LT_LT, sizeof(RELATION_PAIR)) == 0)
@@ -208,7 +204,72 @@ COLL_FRAME_CALC_RET CNCFLineLine(
         return COLL_FRAME_CALC_NO_COLLISION;
     }
 
-    // TODO 
+    if (relationBefore.pair[0] == EQ && relationAfter.pair[0] == EQ)
+    {
+        *collFrame = frame_coll;
+        return COLL_FRAME_CALC_OK;
+    }
 
+    if (relationBefore.pair[1] == EQ && relationAfter.pair[1] == EQ)
+    {
+        *collFrame = frame_coll;
+        return COLL_FRAME_CALC_OK;
+    }
+
+    // in cases where there is no edge collision between the bottom of line1
+    // and the top of line2 there can be no collision at all
+    if (relationBefore.pair[0] == GT || relationAfter.pair[0] == GT)
+    {
+        int a = (line2->rStart.v[(axis+1)%2] + line2->length) - line1->rStart.v[(axis+1)%2];
+        int b = line2->rStart.v[axis] - line1->rStart.v[axis];
+        int c = vrel->v[(axis+1)%2];
+        int d = vrel->v[axis];
+
+        int theta1GTtheta2 = angle1GTangle2(a, b, c, d);
+
+        if (relationBefore.pair[0] == GT)
+        {
+            if (theta1GTtheta2 < 0)
+            {
+                return COLL_FRAME_CALC_NO_COLLISION;
+            }
+        }
+        else
+        {
+            if (theta1GTtheta2 > 0)
+            {
+                return COLL_FRAME_CALC_NO_COLLISION;
+            }
+        }
+    }
+
+    // in cases where there is no edge collision between the top of line1
+    // and the bottom of line2 there can be no collision at all
+    if (relationBefore.pair[1] == LT || relationAfter.pair[1] == LT)
+    {
+        int a = line2->rStart.v[(axis+1)%2] - (line1->rStart.v[(axis+1)%2] + line1->length);
+        int b = line2->rStart.v[axis] - line1->rStart.v[axis];
+        int c = vrel->v[(axis+1)%2];
+        int d = vrel->v[axis];
+
+        int theta1GTtheta2 = angle1GTangle2(a, b, c, d);
+
+        if (relationBefore.pair[1] == LT)
+        {
+            if (theta1GTtheta2 < 0)
+            {
+                return COLL_FRAME_CALC_NO_COLLISION;
+            }
+        }
+        else
+        {
+            if (theta1GTtheta2 > 0)
+            {
+                return COLL_FRAME_CALC_NO_COLLISION;
+            }
+        }
+    }
+
+    *collFrame = frame_coll;
     return COLL_FRAME_CALC_OK;
 }

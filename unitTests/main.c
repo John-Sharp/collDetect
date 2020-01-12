@@ -27,7 +27,7 @@ void testUnhandledTypes()
 int main()
 {
     testUnhandledTypes();
-    // subTestsPointVLine();
+    subTestsPointVLine();
     subTestsPointHLine();
     // TODO
     subTestsVLineVLine();
