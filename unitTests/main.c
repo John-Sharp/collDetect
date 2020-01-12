@@ -6,6 +6,7 @@
 #include "pointHLine.h"
 
 #include "VLineVLine.h"
+#include "HLineHLine.h"
 
 void testUnhandledTypes()
 {
@@ -26,9 +27,9 @@ void testUnhandledTypes()
 
 int main()
 {
-    testUnhandledTypes();
-    subTestsPointVLine();
-    subTestsPointHLine();
-    // TODO
-    subTestsVLineVLine();
+    // testUnhandledTypes();
+    // subTestsPointVLine();
+    // subTestsPointHLine();
+    // subTestsVLineVLine();
+    subTestsHLineHLine();
 }

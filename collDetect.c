@@ -66,6 +66,10 @@ COLL_FRAME_CALC_RET calculateNextCollisionFrame(
         {
             return CNCFLineLine(collFrame, 0, vrel, &ca1->shape.line, &ca2->shape.line);
         }
+        case (COLL_ACTOR_TYPE_H_LINE | COLL_ACTOR_TYPE_H_LINE):
+        {
+            return CNCFLineLine(collFrame, 1, vrel, &ca1->shape.line, &ca2->shape.line);
+        }
         default:
         {
             return COLL_FRAME_CALC_UNHANDLED_TYPES;
