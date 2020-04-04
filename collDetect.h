@@ -22,6 +22,7 @@ typedef struct collActor {
     collShape shape;
     jintVecScaled vel; // velocity
 
+    jint frameStart; // frame when was position described by `shape`
     jint collFrame; // frame before collision
 } collActor;
 
