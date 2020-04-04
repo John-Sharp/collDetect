@@ -11,11 +11,11 @@ static void testMissesLTLTLTLT()
        .shape = {
            .line = {
                .direction = AX_PL_DIR_X,
-               .rStart = {{1, 17},1},
+               .rStart = {{1, 17}},
                .length = 10 
            }
        },
-       .vel = {.v={6,-11}, .scale = 1}
+       .vel = {.v={{6,-11}}, .s = 1}
    };
 
    collActor ca2 = {
@@ -23,11 +23,11 @@ static void testMissesLTLTLTLT()
        .shape = {
            .line = {
                .direction = AX_PL_DIR_X,
-               .rStart = {{18,10},1},
+               .rStart = {{18,10}},
                .length = 19 
            }
        },
-       .vel = {.v = {0,0}, .scale = 1}
+       .vel = {.v = {{0,0}}, .s = 1}
    };
 
    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1.vel, &ca1, &ca2);
@@ -47,11 +47,11 @@ static void testMissesGTGTGTGT()
        .shape = {
            .line = {
                .direction = AX_PL_DIR_X,
-               .rStart = {{43, 17},1},
+               .rStart = {{43, 17}},
                .length = 10 
            }
        },
-       .vel = {.v={-5,-19}, .scale = 1}
+       .vel = {.v={{-5,-19}}, .s = 1}
    };
 
    collActor ca2 = {
@@ -59,11 +59,11 @@ static void testMissesGTGTGTGT()
        .shape = {
            .line = {
                .direction = AX_PL_DIR_X,
-               .rStart = {{18,10},1},
+               .rStart = {{18,10}},
                .length = 19 
            }
        },
-       .vel = {.v = {0,0}, .scale = 1}
+       .vel = {.v = {{0,0}}, .s = 1}
    };
 
    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1.vel, &ca1, &ca2);
@@ -83,11 +83,11 @@ static void testHitsEQEQEQEQ()
         .shape = {
             .line = {
                 .direction = AX_PL_DIR_X,
-                .rStart = {{27, 17},1},
+                .rStart = {{27, 17}},
                 .length = 9 
             }
         },
-        .vel = {.v={-4,-12}, .scale = 1}
+        .vel = {.v={{-4,-12}}, .s = 1}
     };
     
     collActor ca2 = {
@@ -95,11 +95,11 @@ static void testHitsEQEQEQEQ()
         .shape = {
             .line = {
                 .direction = AX_PL_DIR_X,
-               .rStart = {{18,10},1},
+               .rStart = {{18,10}},
                .length = 19 
             }
         },
-        .vel = {.v = {0,0}, .scale = 1}
+        .vel = {.v = {{0,0}}, .s = 1}
     };
 
     COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1.vel, &ca1, &ca2);
@@ -125,11 +125,11 @@ static void testHitsLTEQLTEQ()
         .shape = {
             .line = {
                 .direction = AX_PL_DIR_X,
-                .rStart = {{17, 17},1},
+                .rStart = {{17, 17}},
                 .length = 9 
             }
         },
-        .vel = {.v={-4,-12}, .scale = 1}
+        .vel = {.v={{-4,-12}}, .s = 1}
     };
     
     collActor ca2 = {
@@ -137,11 +137,11 @@ static void testHitsLTEQLTEQ()
         .shape = {
             .line = {
                 .direction = AX_PL_DIR_X,
-               .rStart = {{18,10},1},
+               .rStart = {{18,10}},
                .length = 19 
             }
         },
-        .vel = {.v = {0,0}, .scale = 1}
+        .vel = {.v = {{0,0}}, .s = 1}
     };
 
     COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1.vel, &ca1, &ca2);
@@ -167,11 +167,11 @@ static void testMissesGTGTEQGT()
        .shape = {
            .line = {
                .direction = AX_PL_DIR_X,
-               .rStart = {{41, 17},1},
+               .rStart = {{41, 17}},
                .length = 9 
            }
        },
-       .vel = {.v={-7,-17}, .scale = 1}
+       .vel = {.v={{-7,-17}}, .s = 1}
    };
 
    collActor ca2 = {
@@ -179,11 +179,11 @@ static void testMissesGTGTEQGT()
        .shape = {
            .line = {
                .direction = AX_PL_DIR_X,
-               .rStart = {{18,10},1},
+               .rStart = {{18,10}},
                .length = 19 
            }
        },
-       .vel = {.v = {0,0}, .scale = 1}
+       .vel = {.v = {{0,0}}, .s = 1}
    };
 
    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1.vel, &ca1, &ca2);
@@ -203,11 +203,11 @@ static void testMissesEQGTGTGT()
        .shape = {
            .line = {
                .direction = AX_PL_DIR_X,
-               .rStart = {{34, 0},1},
+               .rStart = {{34, 0}},
                .length = 9 
            }
        },
-       .vel = {.v={7,17}, .scale = 1}
+       .vel = {.v={{7,17}}, .s = 1}
    };
 
    collActor ca2 = {
@@ -215,11 +215,11 @@ static void testMissesEQGTGTGT()
        .shape = {
            .line = {
                .direction = AX_PL_DIR_X,
-               .rStart = {{18,10},1},
+               .rStart = {{18,10}},
                .length = 19 
            }
        },
-       .vel = {.v = {0,0}, .scale = 1}
+       .vel = {.v = {{0,0}}, .s = 1}
    };
 
    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1.vel, &ca1, &ca2);
@@ -239,11 +239,11 @@ static void testMissesLTLTLTEQ()
        .shape = {
            .line = {
                .direction = AX_PL_DIR_X,
-               .rStart = {{6, 16},1},
+               .rStart = {{6, 16}},
                .length = 9 
            }
        },
-       .vel = {.v={5,-15}, .scale = 1}
+       .vel = {.v={{5,-15}}, .s = 1}
    };
 
    collActor ca2 = {
@@ -251,11 +251,11 @@ static void testMissesLTLTLTEQ()
        .shape = {
            .line = {
                .direction = AX_PL_DIR_X,
-               .rStart = {{18,10},1},
+               .rStart = {{18,10}},
                .length = 19 
            }
        },
-       .vel = {.v = {0,0}, .scale = 1}
+       .vel = {.v = {{0,0}}, .s = 1}
    };
 
    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1.vel, &ca1, &ca2);
@@ -275,11 +275,11 @@ static void testMissesLTEQLTLT()
        .shape = {
            .line = {
                .direction = AX_PL_DIR_X,
-               .rStart = {{11, 1},1},
+               .rStart = {{11, 1}},
                .length = 9 
            }
        },
-       .vel = {.v={-5,15}, .scale = 1}
+       .vel = {.v={{-5,15}}, .s = 1}
    };
 
    collActor ca2 = {
@@ -287,11 +287,11 @@ static void testMissesLTEQLTLT()
        .shape = {
            .line = {
                .direction = AX_PL_DIR_X,
-               .rStart = {{18,10},1},
+               .rStart = {{18,10}},
                .length = 19 
            }
        },
-       .vel = {.v = {0,0}, .scale = 1}
+       .vel = {.v = {{0,0}}, .s = 1}
    };
 
    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1.vel, &ca1, &ca2);
@@ -311,11 +311,11 @@ static void testCalculateFrame()
         .shape = {
             .line = {
                 .direction = AX_PL_DIR_X,
-                .rStart = {{24, 21},1},
+                .rStart = {{24, 21}},
                 .length = 9 
             }
         },
-        .vel = {.v={-9,-27}, .scale = 9}
+        .vel = {.v={{-9,-27}}, .s = 9}
     };
     
     collActor ca2 = {
@@ -323,11 +323,11 @@ static void testCalculateFrame()
         .shape = {
             .line = {
                 .direction = AX_PL_DIR_X,
-               .rStart = {{18,10},1},
+               .rStart = {{18,10}},
                .length = 19 
             }
         },
-        .vel = {.v = {0,0}, .scale = 1}
+        .vel = {.v = {{0,0}}, .s = 1}
     };
 
     COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1.vel, &ca1, &ca2);
@@ -353,11 +353,11 @@ static void testHitsLTEQLTLT()
         .shape = {
             .line = {
                 .direction = AX_PL_DIR_X,
-                .rStart = {{14, 14},1},
+                .rStart = {{14, 14}},
                 .length = 9 
             }
         },
-        .vel = {.v={-7,-10}, .scale = 1}
+        .vel = {.v={{-7,-10}}, .s = 1}
     };
     
     collActor ca2 = {
@@ -365,11 +365,11 @@ static void testHitsLTEQLTLT()
         .shape = {
             .line = {
                 .direction = AX_PL_DIR_X,
-               .rStart = {{18,10},1},
+               .rStart = {{18,10}},
                .length = 19 
             }
         },
-        .vel = {.v = {0,0}, .scale = 1}
+        .vel = {.v = {{0,0}}, .s = 1}
     };
 
     COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1.vel, &ca1, &ca2);

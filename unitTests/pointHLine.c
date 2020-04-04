@@ -9,12 +9,9 @@ static void testMissesGTGT()
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
-            .point = {
-                .v = {31, 20},
-                .scale = 1
-            }
+            .point = {{31, 20}}
         },
-        .vel = {.v = {5,-17}, .scale = 1}
+        .vel = {.v = {{5,-17}}, .s = 1}
     };
     
     collActor ca2 = {
@@ -26,7 +23,7 @@ static void testMissesGTGT()
                 .length = 15
             }
         },
-        .vel = {.v = {0,0}, .scale = 1}
+        .vel = {.v = {{0,0}}, .s = 1}
     };
 
     COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1.vel, &ca1, &ca2);
@@ -45,12 +42,9 @@ static void testMissesGTEQ()
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
-            .point = {
-                .v = {38, 17},
-                .scale = 1
-            }
+            .point = {{38, 17}}
         },
-        .vel = {.v = {-13,-14}, .scale = 1}
+        .vel = {.v = {{-13,-14}}, .s = 1}
     };
     
     collActor ca2 = {
@@ -62,7 +56,7 @@ static void testMissesGTEQ()
                 .length = 15
             }
         },
-        .vel = {.v = {0,0}, .scale = 1}
+        .vel = {.v = {{0,0}}, .s = 1}
     };
 
     COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1.vel, &ca1, &ca2);
@@ -81,12 +75,9 @@ static void testMissesEQGT()
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
-            .point = {
-                .v = {26, 17},
-                .scale = 1
-            }
+            .point = {{26, 17}}
         },
-        .vel = {.v = {11,-14}, .scale = 1}
+        .vel = {.v = {{11,-14}}, .s = 1}
     };
     
     collActor ca2 = {
@@ -98,7 +89,7 @@ static void testMissesEQGT()
                 .length = 15
             }
         },
-        .vel = {.v = {0,0}, .scale = 1}
+        .vel = {.v = {{0,0}}, .s = 1}
     };
 
     COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1.vel, &ca1, &ca2);
@@ -117,12 +108,9 @@ static void testMissesLTEQ()
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
-            .point = {
-                .v = {2, 17},
-                .scale = 1
-            }
+            .point = {{2, 17}}
         },
-        .vel = {.v = {23,-14}, .scale = 1}
+        .vel = {.v = {{23,-14}}, .s = 1}
     };
     
     collActor ca2 = {
@@ -134,7 +122,7 @@ static void testMissesLTEQ()
                 .length = 15
             }
         },
-        .vel = {.v = {0,0}, .scale = 1}
+        .vel = {.v = {{0,0}}, .s = 1}
     };
 
     COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1.vel, &ca1, &ca2);
@@ -153,12 +141,9 @@ static void testMissesEQLT()
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
-            .point = {
-                .v = {20, 15},
-                .scale = 1
-            }
+            .point = {{20, 15}}
         },
-        .vel = {.v = {-16,-9}, .scale = 1}
+        .vel = {.v = {{-16,-9}}, .s = 1}
     };
     
     collActor ca2 = {
@@ -170,7 +155,7 @@ static void testMissesEQLT()
                 .length = 15
             }
         },
-        .vel = {.v = {0,0}, .scale = 1}
+        .vel = {.v = {{0,0}}, .s = 1}
     };
 
     COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1.vel, &ca1, &ca2);
@@ -189,12 +174,9 @@ static void testMissesLTLT()
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
-            .point = {
-                .v = {14, 16},
-                .scale = 1
-            }
+            .point = {{14, 16}}
         },
-        .vel = {.v = {-10,-10}, .scale = 1}
+        .vel = {.v = {{-10,-10}}, .s = 1}
     };
     
     collActor ca2 = {
@@ -206,7 +188,7 @@ static void testMissesLTLT()
                 .length = 15
             }
         },
-        .vel = {.v = {0,0}, .scale = 1}
+        .vel = {.v = {{0,0}}, .s = 1}
     };
 
     COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1.vel, &ca1, &ca2);
@@ -225,12 +207,9 @@ static void testCalculateFrame()
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
-            .point = {
-                .v = {10, 10},
-                .scale = 1
-            }
+            .point = {{10, 10}}
         },
-        .vel = {.v = {2,5}, .scale = 6}
+        .vel = {.v = {{2,5}}, .s = 6}
     };
     
     collActor ca2 = {
@@ -242,7 +221,7 @@ static void testCalculateFrame()
                 .length = 11
             }
         },
-        .vel = {.v = {0,0}, .scale = 1}
+        .vel = {.v = {{0,0}}, .s = 1}
     };
 
     COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1.vel, &ca1, &ca2);
@@ -266,12 +245,9 @@ static void testHitsGTEQ()
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
-            .point = {
-                .v = {35, 16},
-                .scale = 1
-            }
+            .point = {{35, 16}},
         },
-        .vel = {.v = {-15,-9}, .scale = 1}
+        .vel = {.v = {{-15,-9}}, .s = 1}
     };
     
     collActor ca2 = {
@@ -283,7 +259,7 @@ static void testHitsGTEQ()
                 .length = 15
             }
         },
-        .vel = {.v = {0,0}, .scale = 1}
+        .vel = {.v = {{0,0}}, .s = 1}
     };
 
     COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1.vel, &ca1, &ca2);

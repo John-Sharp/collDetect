@@ -20,7 +20,7 @@ typedef struct collActor {
     COLL_ACTOR_TYPE type;
 
     collShape shape;
-    jintVec vel; // velocity
+    jintVecScaled vel; // velocity
 
     jint collFrame; // frame before collision
 } collActor;
@@ -33,6 +33,6 @@ typedef enum COLL_FRAME_CALC_RET
 } COLL_FRAME_CALC_RET;
 
 COLL_FRAME_CALC_RET calculateNextCollisionFrame(
-        jint * collFrame, const jintVec * vrel, const collActor * ca1, const collActor * ca2);
+        jint * collFrame, const jintVecScaled * vrel, const collActor * ca1, const collActor * ca2);
 
 #endif

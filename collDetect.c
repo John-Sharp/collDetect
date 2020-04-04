@@ -10,11 +10,11 @@ typedef enum RELATION
     LT
 } RELATION;
 
-RELATION pointLineRelation(jint frame, juint axis, const jintVec * vel, const jintVec * point, const jintAxPlLine * line)
+RELATION pointLineRelation(jint frame, juint axis, const jintVecScaled * vel, const jintVec * point, const jintAxPlLine * line)
 {
-    jint scaledUpPoint = point->v[axis] * vel->scale + frame * vel->v[axis];
-    jint scaledUpLineBottom = line->rStart.v[axis] * vel->scale;
-    jint scaledUpLineTop = scaledUpLineBottom + line->length * vel->scale;
+    jint scaledUpPoint = point->v[axis] * vel->s + frame * vel->v.v[axis];
+    jint scaledUpLineBottom = line->rStart.v[axis] * vel->s;
+    jint scaledUpLineTop = scaledUpLineBottom + line->length * vel->s;
 
     if (scaledUpPoint > scaledUpLineTop)
         return GT;
@@ -30,7 +30,7 @@ typedef struct RELATION_PAIR
     RELATION pair[2];
 } RELATION_PAIR;
 
-RELATION_PAIR lineLineRelation(jint frame, juint axis, const jintVec * vel, const jintAxPlLine * line1, const jintAxPlLine * line2)
+RELATION_PAIR lineLineRelation(jint frame, juint axis, const jintVecScaled * vel, const jintAxPlLine * line1, const jintAxPlLine * line2)
 {
    RELATION_PAIR ret;
    ret.pair[0] = pointLineRelation(frame, axis, vel, &line1->rStart, line2);
@@ -42,15 +42,15 @@ RELATION_PAIR lineLineRelation(jint frame, juint axis, const jintVec * vel, cons
 }
 
 COLL_FRAME_CALC_RET CNCFPointLine(
-        jint * collFrame, juint axis, const jintVec * vRel,
+        jint * collFrame, juint axis, const jintVecScaled * vRel,
         const jintVec * point, const jintAxPlLine * line);
 COLL_FRAME_CALC_RET CNCFLineLine(
-        jint * collFrame, juint axis, const jintVec * vRel, // velocity of 1 relative to 2
+        jint * collFrame, juint axis, const jintVecScaled * vRel, // velocity of 1 relative to 2
         const jintAxPlLine * line1, const jintAxPlLine * line2);
 
 // TODO pass relative velocity into this function
 COLL_FRAME_CALC_RET calculateNextCollisionFrame(
-        jint * collFrame, const jintVec * vrel, const collActor * ca1, const collActor * ca2)
+        jint * collFrame, const jintVecScaled * vrel, const collActor * ca1, const collActor * ca2)
 {
     switch (ca1->type | ca2->type)
     {
@@ -77,9 +77,9 @@ COLL_FRAME_CALC_RET calculateNextCollisionFrame(
     }
 }
 
-jint CNCFPointInfiniteLine(juint axis, const jintVec * vel, const jintVec * point, const jintVec * linePoint)
+jint CNCFPointInfiniteLine(juint axis, const jintVecScaled * vel, const jintVec * point, const jintVec * linePoint)
 {
-    return (linePoint->v[axis] - point->v[axis])  * vel->scale / vel->v[axis];
+    return (linePoint->v[axis] - point->v[axis])  * vel->s / vel->v.v[axis];
 }
 
 // given two right angled triangles with orthogonal sides a,b and c,d
@@ -102,7 +102,7 @@ static int angle1GTangle2(int a, int b, int c, int d)
 }
 
 COLL_FRAME_CALC_RET CNCFPointLine(
-        jint * collFrame, juint axis, const jintVec * vrel, const jintVec * point, const jintAxPlLine * line)
+        jint * collFrame, juint axis, const jintVecScaled * vrel, const jintVec * point, const jintAxPlLine * line)
 {
     int frame_coll = CNCFPointInfiniteLine(axis, vrel, point, &line->rStart);
 
@@ -137,8 +137,8 @@ COLL_FRAME_CALC_RET CNCFPointLine(
     {
         int a = (line->rStart.v[(axis+1)%2] + line->length) - point->v[(axis+1)%2];
         int b = line->rStart.v[axis] - point->v[axis];
-        int c = vrel->v[(axis+1)%2];
-        int d = vrel->v[axis];
+        int c = vrel->v.v[(axis+1)%2];
+        int d = vrel->v.v[axis];
 
         int theta1GTtheta2 = angle1GTangle2(a, b, c, d);
 
@@ -161,8 +161,8 @@ COLL_FRAME_CALC_RET CNCFPointLine(
     {
         int a = line->rStart.v[(axis+1)%2] - point->v[(axis+1)%2];
         int b = line->rStart.v[axis] - point->v[axis];
-        int c = vrel->v[(axis+1)%2];
-        int d = vrel->v[axis];
+        int c = vrel->v.v[(axis+1)%2];
+        int d = vrel->v.v[axis];
 
         int theta1GTtheta2 = angle1GTangle2(a, b, c, d);
 
@@ -187,7 +187,7 @@ COLL_FRAME_CALC_RET CNCFPointLine(
 }
 
 COLL_FRAME_CALC_RET CNCFLineLine(
-        jint * collFrame, juint axis, const jintVec * vrel, // velocity of 1 relative to 2
+        jint * collFrame, juint axis, const jintVecScaled * vrel, // velocity of 1 relative to 2
         const jintAxPlLine * line1, const jintAxPlLine * line2)
 {
     int frame_coll = CNCFPointInfiniteLine(axis, vrel, &line1->rStart, &line2->rStart);
@@ -226,8 +226,8 @@ COLL_FRAME_CALC_RET CNCFLineLine(
     {
         int a = (line2->rStart.v[(axis+1)%2] + line2->length) - line1->rStart.v[(axis+1)%2];
         int b = line2->rStart.v[axis] - line1->rStart.v[axis];
-        int c = vrel->v[(axis+1)%2];
-        int d = vrel->v[axis];
+        int c = vrel->v.v[(axis+1)%2];
+        int d = vrel->v.v[axis];
 
         int theta1GTtheta2 = angle1GTangle2(a, b, c, d);
 
@@ -253,8 +253,8 @@ COLL_FRAME_CALC_RET CNCFLineLine(
     {
         int a = line2->rStart.v[(axis+1)%2] - (line1->rStart.v[(axis+1)%2] + line1->length);
         int b = line2->rStart.v[axis] - line1->rStart.v[axis];
-        int c = vrel->v[(axis+1)%2];
-        int d = vrel->v[axis];
+        int c = vrel->v.v[(axis+1)%2];
+        int d = vrel->v.v[axis];
 
         int theta1GTtheta2 = angle1GTangle2(a, b, c, d);
 
