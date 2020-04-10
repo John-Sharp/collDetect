@@ -11,11 +11,16 @@
 void testUnhandledTypes()
 {
     jint f;
-    collActor ca1 = {.type = COLL_ACTOR_TYPE_POINT};
-    collActor ca2 = {.type = COLL_ACTOR_TYPE_POINT};
-    jintVecScaled vrel = {.v = {{1,1}}, .s = 1};
+    collActor ca1 = {
+        .type = COLL_ACTOR_TYPE_POINT,
+        .vel = {.v = {{1,1}}, .s = 1}
+    };
+    collActor ca2 = {
+        .type = COLL_ACTOR_TYPE_POINT,
+        .vel = {.v = {{0,0}}, .s = 1}
+    };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &vrel, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_UNHANDLED_TYPES)
     {

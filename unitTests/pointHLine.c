@@ -26,7 +26,7 @@ static void testMissesGTGT()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1.vel, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_NO_COLLISION)
     {
@@ -59,7 +59,7 @@ static void testMissesGTEQ()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1.vel, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_NO_COLLISION)
     {
@@ -92,7 +92,7 @@ static void testMissesEQGT()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1.vel, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_NO_COLLISION)
     {
@@ -125,7 +125,7 @@ static void testMissesLTEQ()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1.vel, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_NO_COLLISION)
     {
@@ -158,7 +158,7 @@ static void testMissesEQLT()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1.vel, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_NO_COLLISION)
     {
@@ -191,7 +191,7 @@ static void testMissesLTLT()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1.vel, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_NO_COLLISION)
     {
@@ -224,7 +224,7 @@ static void testCalculateFrame()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1.vel, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_OK)
     {
@@ -262,7 +262,7 @@ static void testHitsGTEQ()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1.vel, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
 
     if (ret == COLL_FRAME_CALC_NO_COLLISION || f != 0)
     {

@@ -54,7 +54,7 @@ static COLL_FRAME_CALC_RET calculateNextCollisionFrameOrderedInput(
 COLL_FRAME_CALC_RET calculateNextCollisionFrame(
         jint * collFrame, const collActor * ca1, const collActor * ca2)
 {
-    if (ca1->type < ca2->type)
+    if (ca1->type <= ca2->type)
         return calculateNextCollisionFrameOrderedInput(
                 collFrame, ca1, ca2);
     return calculateNextCollisionFrameOrderedInput(
