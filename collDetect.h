@@ -34,6 +34,6 @@ typedef enum COLL_FRAME_CALC_RET
 } COLL_FRAME_CALC_RET;
 
 COLL_FRAME_CALC_RET calculateNextCollisionFrame(
-        jint * collFrame, const jintVecScaled * vrel, const collActor * ca1, const collActor * ca2);
+        jint * collFrame, const collActor * ca1, const collActor * ca2);
 
 #endif

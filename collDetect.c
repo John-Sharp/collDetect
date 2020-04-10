@@ -48,27 +48,40 @@ COLL_FRAME_CALC_RET CNCFLineLine(
         jint * collFrame, juint axis, const jintVecScaled * vRel, // velocity of 1 relative to 2
         const jintAxPlLine * line1, const jintAxPlLine * line2);
 
-// TODO pass relative velocity into this function
+static COLL_FRAME_CALC_RET calculateNextCollisionFrameOrderedInput(
+        jint * collFrame, const collActor * ca1, const collActor * ca2);
+
 COLL_FRAME_CALC_RET calculateNextCollisionFrame(
-        jint * collFrame, const jintVecScaled * vrel, const collActor * ca1, const collActor * ca2)
+        jint * collFrame, const collActor * ca1, const collActor * ca2)
 {
+    if (ca1->type < ca2->type)
+        return calculateNextCollisionFrameOrderedInput(
+                collFrame, ca1, ca2);
+    return calculateNextCollisionFrameOrderedInput(
+            collFrame, ca2, ca1);
+}
+
+static COLL_FRAME_CALC_RET calculateNextCollisionFrameOrderedInput(
+        jint * collFrame, const collActor * ca1, const collActor * ca2)
+{
+    jintVecScaled vrel = jintVecScaledSub(&ca1->vel, &ca2->vel);
     switch (ca1->type | ca2->type)
     {
         case (COLL_ACTOR_TYPE_POINT | COLL_ACTOR_TYPE_V_LINE):
         {
-            return CNCFPointLine(collFrame, 0, vrel, &ca1->shape.point, &ca2->shape.line);
+            return CNCFPointLine(collFrame, 0, &vrel, &ca1->shape.point, &ca2->shape.line);
         }
         case (COLL_ACTOR_TYPE_POINT | COLL_ACTOR_TYPE_H_LINE):
         {
-            return CNCFPointLine(collFrame, 1, vrel, &ca1->shape.point, &ca2->shape.line);
+            return CNCFPointLine(collFrame, 1, &vrel, &ca1->shape.point, &ca2->shape.line);
         }
         case (COLL_ACTOR_TYPE_V_LINE | COLL_ACTOR_TYPE_V_LINE):
         {
-            return CNCFLineLine(collFrame, 0, vrel, &ca1->shape.line, &ca2->shape.line);
+            return CNCFLineLine(collFrame, 0, &vrel, &ca1->shape.line, &ca2->shape.line);
         }
         case (COLL_ACTOR_TYPE_H_LINE | COLL_ACTOR_TYPE_H_LINE):
         {
-            return CNCFLineLine(collFrame, 1, vrel, &ca1->shape.line, &ca2->shape.line);
+            return CNCFLineLine(collFrame, 1, &vrel, &ca1->shape.line, &ca2->shape.line);
         }
         default:
         {
