@@ -47,6 +47,9 @@ COLL_FRAME_CALC_RET CNCFPointLine(
 COLL_FRAME_CALC_RET CNCFLineLine(
         jint * collFrame, juint axis, const jintVecScaled * vRel, // velocity of 1 relative to 2
         const jintAxPlLine * line1, const jintAxPlLine * line2);
+static COLL_FRAME_CALC_RET CNCFPointRect(
+        jint * collFrame, const jintVecScaled * vrel, 
+        const jintVec * point, const jintRect * rect);
 
 static COLL_FRAME_CALC_RET calculateNextCollisionFrameOrderedInput(
         jint * collFrame, const collActor * ca1, const collActor * ca2);
@@ -74,6 +77,10 @@ static COLL_FRAME_CALC_RET calculateNextCollisionFrameOrderedInput(
         case (COLL_ACTOR_TYPE_POINT | COLL_ACTOR_TYPE_H_LINE):
         {
             return CNCFPointLine(collFrame, 1, &vrel, &ca1->shape.point, &ca2->shape.line);
+        }
+        case (COLL_ACTOR_TYPE_POINT | COLL_ACTOR_TYPE_RECT):
+        {
+            return CNCFPointRect(collFrame, &vrel, &ca1->shape.point, &ca2->shape.rect);
         }
         case (COLL_ACTOR_TYPE_V_LINE | COLL_ACTOR_TYPE_V_LINE):
         {
@@ -197,6 +204,52 @@ COLL_FRAME_CALC_RET CNCFPointLine(
 
     *collFrame = frame_coll;
     return COLL_FRAME_CALC_OK;
+}
+
+static COLL_FRAME_CALC_RET CNCFPointRect(
+        jint * collFrame, const jintVecScaled * vrel, 
+        const jintVec * point, const jintRect * rect)
+{
+    COLL_FRAME_CALC_RET ret = COLL_FRAME_CALC_NO_COLLISION;
+    jint collFrameTemp;
+    jintVec leadingEdgeLocation;
+    jint widthHeight[2] = {jintRectGetWidth(rect), jintRectGetHeight(rect)};
+
+    jint axis;
+    for (axis = 0; axis < 2; axis++)
+    {
+        if (vrel->v.v[axis] > 0)
+        {
+            leadingEdgeLocation = rect->bl;
+        }
+        else if (vrel->v.v[axis] < 0)
+        {
+            leadingEdgeLocation.v[axis] = rect->bl.v[axis] + widthHeight[axis];
+            leadingEdgeLocation.v[(axis+1)%2] = rect->bl.v[(axis+1)%2];
+        }
+        if (vrel->v.v[axis] != 0)
+        {
+            jintAxPlLine leadingEdge = {
+                .direction = (axis == 0 ? AX_PL_DIR_Y : AX_PL_DIR_X),
+                .rStart = leadingEdgeLocation,
+                .length = widthHeight[(axis+1)%2]
+            };
+            COLL_FRAME_CALC_RET res = CNCFPointLine(
+                    &collFrameTemp,
+                    axis,
+                    vrel,
+                    point,
+                    &leadingEdge);
+
+            if (res == COLL_FRAME_CALC_OK)
+            {
+                ret = res;
+                *collFrame = collFrameTemp;
+            }
+        }
+    }
+
+    return ret;
 }
 
 COLL_FRAME_CALC_RET CNCFLineLine(

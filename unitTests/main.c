@@ -4,6 +4,7 @@
 
 #include "pointVLine.h"
 #include "pointHLine.h"
+#include "pointRect.h"
 
 #include "VLineVLine.h"
 #include "HLineHLine.h"
@@ -35,6 +36,7 @@ int main()
     testUnhandledTypes();
     subTestsPointVLine();
     subTestsPointHLine();
+    subTestsPointRect();
     subTestsVLineVLine();
     subTestsHLineHLine();
 }

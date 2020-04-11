@@ -8,12 +8,14 @@ typedef enum COLL_ACTOR_TYPE
     COLL_ACTOR_TYPE_POINT = 1,
     COLL_ACTOR_TYPE_V_LINE = 1<<1,
     COLL_ACTOR_TYPE_H_LINE = 1<<2,
+    COLL_ACTOR_TYPE_RECT = 1<<3,
 } COLL_ACTOR_TYPE;
 
 typedef union collShape 
 {
     jintVec point;
     jintAxPlLine line;
+    jintRect rect;
 } collShape;
 
 typedef struct collActor {
