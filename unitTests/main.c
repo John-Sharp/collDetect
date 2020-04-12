@@ -6,6 +6,7 @@
 #include "pointHLine.h"
 #include "pointRect.h"
 
+#include "lineRect.h"
 #include "VLineVLine.h"
 #include "HLineHLine.h"
 
@@ -38,5 +39,6 @@ int main()
     subTestsPointHLine();
     subTestsPointRect();
     subTestsVLineVLine();
+    subTestsLineRect();
     subTestsHLineHLine();
 }
