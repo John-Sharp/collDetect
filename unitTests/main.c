@@ -10,6 +10,8 @@
 #include "VLineVLine.h"
 #include "HLineHLine.h"
 
+#include "rectRect.h"
+
 void testUnhandledTypes()
 {
     jint f;
@@ -41,4 +43,5 @@ int main()
     subTestsVLineVLine();
     subTestsLineRect();
     subTestsHLineHLine();
+    subTestsRectRect();
 }

@@ -53,6 +53,9 @@ static COLL_FRAME_CALC_RET CNCFPointRect(
 static COLL_FRAME_CALC_RET CNCFLineRect(
         jint * collFrame, jint axis, const jintVecScaled * vrel, 
         const jintAxPlLine * line, const jintRect * rect);
+static COLL_FRAME_CALC_RET CNCFRectRect(
+        jint * collFrame, const jintVecScaled * vrel,
+        const jintRect * rect1, const jintRect * rect2);
 
 static COLL_FRAME_CALC_RET calculateNextCollisionFrameOrderedInput(
         jint * collFrame, const collActor * ca1, const collActor * ca2);
@@ -100,6 +103,10 @@ static COLL_FRAME_CALC_RET calculateNextCollisionFrameOrderedInput(
         case (COLL_ACTOR_TYPE_H_LINE | COLL_ACTOR_TYPE_RECT):
         {
             return CNCFLineRect(collFrame, 1, &vrel, &ca1->shape.line, &ca2->shape.rect);
+        }
+        case (COLL_ACTOR_TYPE_RECT | COLL_ACTOR_TYPE_RECT):
+        {
+            return CNCFRectRect(collFrame, &vrel, &ca1->shape.rect, &ca2->shape.rect);
         }
         default:
         {
@@ -284,6 +291,33 @@ static COLL_FRAME_CALC_RET CNCFLineRect(
                 collFrame, axis, vrel,
                 line, &leadingEdge);
     }
+    return COLL_FRAME_CALC_NO_COLLISION;
+}
+
+static COLL_FRAME_CALC_RET CNCFRectRect(
+        jint * collFrame, const jintVecScaled * vrel,
+        const jintRect * rect1, const jintRect * rect2)
+{
+    jint axis;
+
+    jintVecScaled vrelReversed = *vrel;
+    vrelReversed.v.v[0] *= -1;
+    vrelReversed.v.v[1] *= -1;
+
+    for (axis = 0; axis < 2; axis++)
+    {
+        jintAxPlLine leadingEdge[2];
+        if (!getLeadingEdge(rect2, axis, vrel, &leadingEdge[1]))
+            continue;
+        if (!getLeadingEdge(rect1, axis, &vrelReversed, &leadingEdge[0]))
+            continue;
+        if (CNCFLineLine(collFrame, axis, vrel,
+                    &leadingEdge[0], &leadingEdge[1]) == COLL_FRAME_CALC_OK)
+        {
+            return COLL_FRAME_CALC_OK;
+        }
+    }
+
     return COLL_FRAME_CALC_NO_COLLISION;
 }
 
