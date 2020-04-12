@@ -206,34 +206,44 @@ COLL_FRAME_CALC_RET CNCFPointLine(
     return COLL_FRAME_CALC_OK;
 }
 
+static jint getLeadingEdge(
+        const jintRect * rect, jint axis,
+        const jintVecScaled * v,
+        jintAxPlLine * leadingEdge)
+{
+    if (v->v.v[axis] == 0)
+        return 0;
+
+    jintVec leadingEdgeLocation;
+    jint widthHeight[2] = {jintRectGetWidth(rect), jintRectGetHeight(rect)};
+
+    if (v->v.v[axis] > 0)
+    {
+        leadingEdgeLocation = rect->bl;
+    }
+    else if (v->v.v[axis] < 0)
+    {
+        leadingEdgeLocation.v[axis] = rect->bl.v[axis] + widthHeight[axis];
+        leadingEdgeLocation.v[(axis+1)%2] = rect->bl.v[(axis+1)%2];
+    }
+    leadingEdge->direction = (axis == 0 ? AX_PL_DIR_Y : AX_PL_DIR_X);
+    leadingEdge->rStart = leadingEdgeLocation;
+    leadingEdge->length = widthHeight[(axis+1)%2];
+
+    return 1;
+}
+
 static COLL_FRAME_CALC_RET CNCFPointRect(
         jint * collFrame, const jintVecScaled * vrel, 
         const jintVec * point, const jintRect * rect)
 {
-    COLL_FRAME_CALC_RET ret = COLL_FRAME_CALC_NO_COLLISION;
-    jint collFrameTemp;
-    jintVec leadingEdgeLocation;
-    jint widthHeight[2] = {jintRectGetWidth(rect), jintRectGetHeight(rect)};
-
     jint axis;
     for (axis = 0; axis < 2; axis++)
     {
-        if (vrel->v.v[axis] > 0)
+        jintAxPlLine leadingEdge;
+        if (getLeadingEdge(rect, axis, vrel, &leadingEdge))
         {
-            leadingEdgeLocation = rect->bl;
-        }
-        else if (vrel->v.v[axis] < 0)
-        {
-            leadingEdgeLocation.v[axis] = rect->bl.v[axis] + widthHeight[axis];
-            leadingEdgeLocation.v[(axis+1)%2] = rect->bl.v[(axis+1)%2];
-        }
-        if (vrel->v.v[axis] != 0)
-        {
-            jintAxPlLine leadingEdge = {
-                .direction = (axis == 0 ? AX_PL_DIR_Y : AX_PL_DIR_X),
-                .rStart = leadingEdgeLocation,
-                .length = widthHeight[(axis+1)%2]
-            };
+            jint collFrameTemp;
             COLL_FRAME_CALC_RET res = CNCFPointLine(
                     &collFrameTemp,
                     axis,
@@ -243,13 +253,13 @@ static COLL_FRAME_CALC_RET CNCFPointRect(
 
             if (res == COLL_FRAME_CALC_OK)
             {
-                ret = res;
                 *collFrame = collFrameTemp;
+                return COLL_FRAME_CALC_OK;
             }
         }
     }
 
-    return ret;
+    return COLL_FRAME_CALC_NO_COLLISION;
 }
 
 COLL_FRAME_CALC_RET CNCFLineLine(
