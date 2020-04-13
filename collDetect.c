@@ -2,6 +2,61 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+
+static COLL_FRAME_CALC_RET calculateNextCollisionFrameOrderedInput(
+        jint * collFrame, const collActor * ca1, const collActor * ca2);
+
+typedef struct collGroup 
+{
+    juint categoryNumber1;
+    juint categoryNumber2;
+    collHandler handler;
+} collGroup;
+
+#include "./listHeaders/collGroupList.h"
+#include "./listCode/collGroupList.inc"
+
+typedef struct collEngineInternal
+{
+    collEngine collEngine;
+
+    collGroupList * collGroupList;
+} collEngineInternal;
+
+collEngine * createCollEngine()
+{
+    collEngineInternal * eng = malloc(sizeof(*eng));
+    if (!eng)
+        return NULL;
+
+    eng->collGroupList = NULL;
+
+    return &eng->collEngine;
+}
+
+void destroyCollEngine(collEngine * eng)
+{
+    collEngineInternal * this = (collEngineInternal *)eng;
+
+    free(this);
+}
+
+void collEngineUpsertCollGroup(juint categoryNumber1, juint categoryNumber2, 
+        collHandler handler)
+{
+
+}
+
+COLL_FRAME_CALC_RET calculateNextCollisionFrame(
+        jint * collFrame, const collActor * ca1, const collActor * ca2)
+{
+    if (ca1->type <= ca2->type)
+        return calculateNextCollisionFrameOrderedInput(
+                collFrame, ca1, ca2);
+    return calculateNextCollisionFrameOrderedInput(
+            collFrame, ca2, ca1);
+}
 
 typedef enum RELATION
 {
@@ -56,19 +111,6 @@ static COLL_FRAME_CALC_RET CNCFLineRect(
 static COLL_FRAME_CALC_RET CNCFRectRect(
         jint * collFrame, const jintVecScaled * vrel,
         const jintRect * rect1, const jintRect * rect2);
-
-static COLL_FRAME_CALC_RET calculateNextCollisionFrameOrderedInput(
-        jint * collFrame, const collActor * ca1, const collActor * ca2);
-
-COLL_FRAME_CALC_RET calculateNextCollisionFrame(
-        jint * collFrame, const collActor * ca1, const collActor * ca2)
-{
-    if (ca1->type <= ca2->type)
-        return calculateNextCollisionFrameOrderedInput(
-                collFrame, ca1, ca2);
-    return calculateNextCollisionFrameOrderedInput(
-            collFrame, ca2, ca1);
-}
 
 static COLL_FRAME_CALC_RET calculateNextCollisionFrameOrderedInput(
         jint * collFrame, const collActor * ca1, const collActor * ca2)

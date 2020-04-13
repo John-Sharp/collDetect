@@ -28,12 +28,23 @@ typedef struct collActor {
     jint collFrame; // frame before collision
 } collActor;
 
+typedef struct collEngine
+{
+} collEngine;
+typedef void (*collHandler)(collActor * ca1, collActor * ca2);
+
+collEngine * createCollEngine();
+void destroyCollEngine();
+void collEngineUpsertCollGroup(juint categoryNumber1, juint categoryNumber2, 
+        collHandler handler);
+
 typedef enum COLL_FRAME_CALC_RET
 {
     COLL_FRAME_CALC_OK,
     COLL_FRAME_CALC_UNHANDLED_TYPES,
     COLL_FRAME_CALC_NO_COLLISION
 } COLL_FRAME_CALC_RET;
+
 
 COLL_FRAME_CALC_RET calculateNextCollisionFrame(
         jint * collFrame, const collActor * ca1, const collActor * ca2);
