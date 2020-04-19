@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <assert.h>
 
 static COLL_FRAME_CALC_RET calculateNextCollisionFrameOrderedInput(
         jint * collFrame, const collActor * ca1, const collActor * ca2);
@@ -14,6 +15,18 @@ typedef struct collGroup
     collHandler handler;
 } collGroup;
 
+#include "./listHeaders/collActorList.h"
+#include "./listCode/collActorList.inc"
+
+typedef struct collActorCategoryNumberGrouped
+{
+    juint categoryNumber;
+    collActorList * actorList;
+} collActorCategoryNumberGrouped;
+
+#include "./listHeaders/collActorCategoryNumberGroupedList.h"
+#include "./listCode/collActorCategoryNumberGroupedList.inc"
+
 #include "./listHeaders/collGroupList.h"
 #include "./listCode/collGroupList.inc"
 
@@ -22,6 +35,8 @@ typedef struct collEngineInternal
     collEngine collEngine;
 
     collGroupList * collGroupList;
+
+    collActorCategoryNumberGroupedList * registeredActors;
 } collEngineInternal;
 
 collEngine * createCollEngine()
@@ -31,20 +46,154 @@ collEngine * createCollEngine()
         return NULL;
 
     eng->collGroupList = NULL;
+    eng->registeredActors = NULL;
 
     return &eng->collEngine;
 }
 
+static void freeCollGroupList(collGroupList * list);
+static void freeCollActorCategoryNumberGroupedList(
+    collActorCategoryNumberGroupedList * list);
 void destroyCollEngine(collEngine * eng)
 {
     collEngineInternal * this = (collEngineInternal *)eng;
 
+    freeCollGroupList(this->collGroupList);
+    freeCollActorCategoryNumberGroupedList(
+            this->registeredActors);
+
     free(this);
 }
 
-void collEngineUpsertCollGroup(juint categoryNumber1, juint categoryNumber2, 
+static bool collGroupKeyCmp(const collGroup * a, const collGroup * b);
+static bool collGroupCatCmp(const collGroup * a, const collGroup * b);
+void collEngineUpsertCollGroup(collEngine * eng,
+        juint categoryNumber1, juint categoryNumber2, 
         collHandler handler)
 {
+    collEngineInternal * this = (collEngineInternal *)eng;
+
+    collGroup * cg = malloc(sizeof(*cg));
+    cg->categoryNumber1 = categoryNumber1 <= categoryNumber2 ? \
+                            categoryNumber1 : categoryNumber2;
+    cg->categoryNumber2 = categoryNumber1 <= categoryNumber2 ? \
+                            categoryNumber2 : categoryNumber1;
+    cg->handler = handler;
+
+    collGroup * cgOld;
+    this->collGroupList = collGroupListUpsert(
+            this->collGroupList, cg, collGroupKeyCmp, &cgOld);
+    if (cgOld)
+        free(cgOld);
+}
+
+void collEngineCollGroupRm(collEngine * eng,
+        juint categoryNumber1, juint categoryNumber2)
+{
+    collEngineInternal * this = (collEngineInternal *)eng;
+    collGroup valToRemove = {
+        .categoryNumber1 = categoryNumber1 <= \
+                         categoryNumber2 ? \
+                            categoryNumber1 :\
+                            categoryNumber2,
+        .categoryNumber2 = categoryNumber1 <= \
+                           categoryNumber2 ? \
+                        categoryNumber2 :\
+                            categoryNumber1,
+        .handler = NULL
+    };
+
+    collGroup * removedVal = NULL;
+    this->collGroupList = collGroupListRm(
+            this->collGroupList, &valToRemove,
+            collGroupKeyCmp, &removedVal);
+
+    if (removedVal)
+    {
+        free(removedVal);
+    }
+}
+
+void collEngineCollGroupRmCat(collEngine * eng,
+        juint categoryNumber)
+{
+    collEngineInternal * this = (collEngineInternal *)eng;
+    collGroup valToRemove = {
+        .categoryNumber1 = categoryNumber,
+        .categoryNumber2 = 0,
+        .handler = NULL
+    };
+
+    collGroup * removedVal = NULL;
+    do
+    {
+        this->collGroupList = collGroupListRm(
+                this->collGroupList, &valToRemove,
+                collGroupCatCmp, &removedVal);
+
+        if (removedVal)
+        {
+            free(removedVal);
+        }
+    } while (removedVal);
+}
+
+static void getOrCreateRegisteredActorCategory(collEngineInternal * this,
+        juint categoryNumber, collActorCategoryNumberGrouped ** category);
+static bool collActorListPtrCmp(const collActor * a, const collActor * b)
+{
+    if (a == b)
+        return true;
+
+    return false;
+}
+
+void collEngineRegisterCollActor(collEngine * eng,
+        collActor * actor)
+{
+    collEngineInternal * this = (collEngineInternal *)eng;
+    collActorCategoryNumberGrouped * category;
+
+    getOrCreateRegisteredActorCategory(this,
+        actor->categoryNumber, &category);
+
+    if (!collActorListSearch(
+                category->actorList, actor, collActorListPtrCmp))
+    {
+        category->actorList = collActorListAdd(
+                category->actorList, actor);
+    }
+}
+
+static bool collActorCategoryNumberGroupedCatNumCmp(
+    const collActorCategoryNumberGrouped * a,
+    const collActorCategoryNumberGrouped * b);
+static void rmRegisteredActorCategory(
+        collEngineInternal * this, juint categoryNumber);
+
+void collEngineDeregisterCollActor(collEngine * eng,
+        collActor * actor)
+{
+    collEngineInternal * this = (collEngineInternal *)eng;
+
+    collActorCategoryNumberGrouped target = {.categoryNumber = 
+        actor->categoryNumber};
+    collActorCategoryNumberGroupedList * node = \
+        collActorCategoryNumberGroupedListSearch(
+                this->registeredActors,
+                &target,
+                collActorCategoryNumberGroupedCatNumCmp);
+
+    if (!node)
+        return;
+
+    collActorCategoryNumberGrouped * category = node->val;
+
+    category->actorList = collActorListRm(category->actorList,
+            actor, collActorListPtrCmp, NULL);
+
+    if (!category->actorList)
+        rmRegisteredActorCategory(this, actor->categoryNumber);
 
 }
 
@@ -454,3 +603,125 @@ COLL_FRAME_CALC_RET CNCFLineLine(
     *collFrame = frame_coll;
     return COLL_FRAME_CALC_OK;
 }
+
+static bool collGroupKeyCmp(const collGroup * a, const collGroup * b)
+{
+    if (a->categoryNumber1 != b->categoryNumber1)
+        return false;
+    if (a->categoryNumber2 != b->categoryNumber2)
+        return false;
+
+    return true;
+}
+
+static bool collGroupCatCmp(const collGroup * a, const collGroup * b)
+{
+    if (a->categoryNumber1 == b->categoryNumber1)
+        return true;
+    if (a->categoryNumber1 == b->categoryNumber2)
+        return true;
+
+    return false;
+}
+
+static void freeCollGroupList(collGroupList * list)
+{
+    collGroupList * lp;
+    for (lp = list;lp != NULL;)
+    {
+        collGroupList * lp2 = lp->next;
+        free(lp->val);
+        free(lp);
+        lp = lp2;
+    }
+}
+
+static void freeCollActorCategoryNumberGrouped(
+    collActorCategoryNumberGrouped * group);
+static void freeCollActorCategoryNumberGroupedList(
+    collActorCategoryNumberGroupedList * list)
+{
+    collActorCategoryNumberGroupedList * lp;
+    for (lp = list;lp != NULL;)
+    {
+        collActorCategoryNumberGroupedList * lp2 = lp->next;
+
+        freeCollActorCategoryNumberGrouped(lp->val);
+        free(lp);
+        lp = lp2;
+    }
+}
+
+static void freeCollActorCategoryNumberGrouped(
+    collActorCategoryNumberGrouped * group)
+{
+    collActorList * alp;
+
+    for (alp = group->actorList; alp != NULL;)
+    {
+        collActorList * alp2 = alp->next;
+
+        free(alp);
+        alp = alp2;
+    }
+
+    free(group);
+}
+
+static void getOrCreateRegisteredActorCategory(collEngineInternal * this,
+        juint categoryNumber, collActorCategoryNumberGrouped ** category)
+{
+    collActorCategoryNumberGrouped target = {.categoryNumber = 
+        categoryNumber};
+    collActorCategoryNumberGroupedList * node = \
+        collActorCategoryNumberGroupedListSearch(
+            this->registeredActors,
+            &target,
+            collActorCategoryNumberGroupedCatNumCmp);
+
+    if (node)
+    {
+        *category = node->val;
+        return;
+    }
+
+    collActorCategoryNumberGrouped * newCategory = \
+        malloc(sizeof(*newCategory));
+    assert(newCategory);
+
+    newCategory->categoryNumber = categoryNumber;
+    newCategory->actorList = NULL;
+
+    this->registeredActors = collActorCategoryNumberGroupedListAdd(
+        this->registeredActors, newCategory);
+
+    *category = newCategory;
+    return;
+}
+
+static void rmRegisteredActorCategory(
+        collEngineInternal * this, juint categoryNumber)
+{
+    collActorCategoryNumberGrouped target = {.categoryNumber = 
+        categoryNumber};
+
+    collActorCategoryNumberGrouped * oldNode;
+    this->registeredActors = collActorCategoryNumberGroupedListRm(
+            this->registeredActors, 
+            &target,
+            collActorCategoryNumberGroupedCatNumCmp,
+            &oldNode);
+
+    if (oldNode)
+        freeCollActorCategoryNumberGrouped(oldNode);
+}
+
+static bool collActorCategoryNumberGroupedCatNumCmp(
+    const collActorCategoryNumberGrouped * a,
+    const collActorCategoryNumberGrouped * b)
+{
+    if (a->categoryNumber == b->categoryNumber)
+        return true;
+    return false;
+}
+

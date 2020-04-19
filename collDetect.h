@@ -23,6 +23,8 @@ typedef struct collActor {
 
     collShape shape;
     jintVecScaled vel; // velocity
+    
+    juint categoryNumber;
 
     jint frameStart; // frame when was position described by `shape`
     jint collFrame; // frame before collision
@@ -35,8 +37,19 @@ typedef void (*collHandler)(collActor * ca1, collActor * ca2);
 
 collEngine * createCollEngine();
 void destroyCollEngine();
-void collEngineUpsertCollGroup(juint categoryNumber1, juint categoryNumber2, 
+
+void collEngineUpsertCollGroup(collEngine * collEngine,
+        juint categoryNumber1, juint categoryNumber2, 
         collHandler handler);
+void collEngineCollGroupRm(collEngine * eng,
+        juint categoryNumber1, juint categoryNumber2);
+void collEngineCollGroupRmCat(collEngine * eng,
+        juint categoryNumber);
+
+void collEngineRegisterCollActor(collEngine * eng,
+        collActor * actor);
+void collEngineDeregisterCollActor(collEngine * eng,
+        collActor * actor);
 
 typedef enum COLL_FRAME_CALC_RET
 {
