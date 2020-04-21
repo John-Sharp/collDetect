@@ -229,6 +229,23 @@ void collEngineDeregisterCollActor(collEngine * eng,
     if (!category->actorList)
         rmRegisteredActorCategory(this, actor->categoryNumber);
 
+    if (!actor->nextScheduledCollision)
+        return;
+
+    collInfo * nsInfo = actor->nextScheduledCollision;
+    collActor * orphanedActor;
+    if (actor->categoryNumber == nsInfo->actor1->categoryNumber)
+        orphanedActor = nsInfo->actor2;
+    else
+        orphanedActor = nsInfo->actor1;
+
+    while (orphanedActor)
+    {
+        collActor * oldOrphanedActor = orphanedActor;
+        orphanedActor = NULL;
+        collEngineCollActorCalculateNextCollision(
+                this, oldOrphanedActor, &orphanedActor);
+    }
 }
 
 COLL_FRAME_CALC_RET calculateNextCollisionFrame(
@@ -763,10 +780,12 @@ static void collEnginePopulateCollisionInfoForActorWithGroup(
         collEngineInternal * this, collActor * actor,
         collGroup * collGroup,
         collInfo * collInfo);
+
 static void collEngineCollActorCalculateNextCollision(
         collEngineInternal * this, collActor * actor,
         collActor ** orphanedActor)
 {
+    assert(actor->nextScheduledCollision == NULL);
     *orphanedActor = NULL;
 
     // partially initialise a collInfo struct.
@@ -799,7 +818,6 @@ static void collEngineCollActorCalculateNextCollision(
 
     if (!collInfo.actor2)
     {
-        // collEngineUnsetCollActorCollision(this, actor);
         return;
     }
 
@@ -817,6 +835,7 @@ static void collEngineCollActorCalculateNextCollision(
 
         *nsColl = collInfo;
         actor->nextScheduledCollision = nsColl;
+        (*orphanedActor)->nextScheduledCollision = NULL;
         // TODO probably want to reinsert this in list
         // in ordered way
         return;
