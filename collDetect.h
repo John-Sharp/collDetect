@@ -18,6 +18,7 @@ typedef union collShape
     jintRect rect;
 } collShape;
 
+typedef struct collInfo collInfo;
 typedef struct collActor {
     COLL_ACTOR_TYPE type;
 
@@ -25,6 +26,7 @@ typedef struct collActor {
     jintVecScaled vel; // velocity
     
     juint categoryNumber;
+    collInfo * nextScheduledCollision;
 
     jint frameStart; // frame when was position described by `shape`
     jint collFrame; // frame before collision

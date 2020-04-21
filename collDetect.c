@@ -30,13 +30,29 @@ typedef struct collActorCategoryNumberGrouped
 #include "./listHeaders/collGroupList.h"
 #include "./listCode/collGroupList.inc"
 
+typedef struct collInfo
+{
+    collActor * actor1;
+    collActor * actor2;
+
+    jint collFrame;
+
+    collGroup * collGroup;
+} collInfo;
+
+#include "./listHeaders/collInfoList.h"
+#include "./listCode/collInfoList.inc"
+
 typedef struct collEngineInternal
 {
     collEngine collEngine;
 
+    jint frame;
+
     collGroupList * collGroupList;
 
     collActorCategoryNumberGroupedList * registeredActors;
+    collInfoList * scheduledCollisions;
 } collEngineInternal;
 
 collEngine * createCollEngine()
@@ -45,8 +61,10 @@ collEngine * createCollEngine()
     if (!eng)
         return NULL;
 
+    eng->frame = 0;
     eng->collGroupList = NULL;
     eng->registeredActors = NULL;
+    eng->scheduledCollisions = NULL;
 
     return &eng->collEngine;
 }
@@ -148,6 +166,9 @@ static bool collActorListPtrCmp(const collActor * a, const collActor * b)
     return false;
 }
 
+static void collEngineCollActorCalculateNextCollision(
+        collEngineInternal * this, collActor * actor,
+        collActor ** orphanedActor);
 void collEngineRegisterCollActor(collEngine * eng,
         collActor * actor)
 {
@@ -162,6 +183,19 @@ void collEngineRegisterCollActor(collEngine * eng,
     {
         category->actorList = collActorListAdd(
                 category->actorList, actor);
+    }
+
+    actor->nextScheduledCollision = NULL;
+    collActor * orphanedActor = NULL;
+    collEngineCollActorCalculateNextCollision(
+            this, actor, &orphanedActor);
+
+    while (orphanedActor)
+    {
+        collActor * oldOrphanedActor = orphanedActor;
+        orphanedActor = NULL;
+        collEngineCollActorCalculateNextCollision(
+                this, oldOrphanedActor, &orphanedActor);
     }
 }
 
@@ -725,3 +759,130 @@ static bool collActorCategoryNumberGroupedCatNumCmp(
     return false;
 }
 
+static void collEnginePopulateCollisionInfoForActorWithGroup(
+        collEngineInternal * this, collActor * actor,
+        collGroup * collGroup,
+        collInfo * collInfo);
+static void collEngineCollActorCalculateNextCollision(
+        collEngineInternal * this, collActor * actor,
+        collActor ** orphanedActor)
+{
+    *orphanedActor = NULL;
+
+    // partially initialise a collInfo struct.
+    // collEnginePopulateCollisionInfoForActorWithGroup will
+    // only fill this in if frame is >= the engine's
+    // frame
+    collInfo collInfo = {
+        .actor1 = actor,
+        .actor2 = NULL,
+        .collFrame = this->frame - 1,
+        .collGroup = NULL
+    };
+
+    // search and retrieve all collGroups containing actor->categoryNumber
+    collGroup target = {
+        .categoryNumber1 = actor->categoryNumber,
+        .categoryNumber2 = 0,
+        .handler = NULL
+    };
+    collGroupList * searchResult = this->collGroupList;
+    while (
+        (searchResult = collGroupListSearch(
+                searchResult, &target, collGroupCatCmp)))
+    {
+        collEnginePopulateCollisionInfoForActorWithGroup(
+                this, actor, searchResult->val,
+                &collInfo);
+        searchResult = searchResult->next;
+    }
+
+    if (!collInfo.actor2)
+    {
+        // collEngineUnsetCollActorCollision(this, actor);
+        return;
+    }
+
+    if (collInfo.actor2->nextScheduledCollision)
+    {
+        struct collInfo * nsColl = collInfo.actor2->nextScheduledCollision;
+        if (nsColl->actor1 == collInfo.actor2)
+        {
+            *orphanedActor = nsColl->actor1;
+        }
+        else
+        {
+            *orphanedActor = collInfo.actor2;
+        }
+
+        *nsColl = collInfo;
+        actor->nextScheduledCollision = nsColl;
+        // TODO probably want to reinsert this in list
+        // in ordered way
+        return;
+    }
+
+    struct collInfo * nextScheduledCollision = malloc(sizeof(*nextScheduledCollision));
+    assert(nextScheduledCollision);
+
+    *nextScheduledCollision = collInfo;
+    actor->nextScheduledCollision = nextScheduledCollision;
+    collInfo.actor2->nextScheduledCollision  = nextScheduledCollision;
+
+    this->scheduledCollisions = collInfoListAdd(this->scheduledCollisions, nextScheduledCollision);
+}
+
+static void collEnginePopulateCollisionInfoForActorWithGroup(
+        collEngineInternal * this, collActor * actor,
+        collGroup * collGroup,
+        collInfo * collInfo)
+{
+    collActorCategoryNumberGrouped target;
+    if (actor->categoryNumber == collGroup->categoryNumber1)
+        target.categoryNumber = collGroup->categoryNumber2;
+    else
+        target.categoryNumber = collGroup->categoryNumber1;
+
+    collActorCategoryNumberGroupedList * actorGroupList = \
+        collActorCategoryNumberGroupedListSearch(
+            this->registeredActors, &target, 
+            collActorCategoryNumberGroupedCatNumCmp);
+    if (!actorGroupList)
+        return;
+
+    collActorList * actorList = actorGroupList->val->actorList;
+
+    for (; actorList; actorList = actorList->next)
+    {
+        if (actorList->val == actor)
+            continue;
+
+        // for each of these, CNCF, keep a record of lowest CF,
+        // that is still greater or equal to current frame of engine
+        // and where partner in collision isn't due to collide with anything
+        // before CF
+        // if it is due to collide with something afterwards, then use that 
+        // objects' collisionInfo, and return orphaned
+        // actor
+        jint collFrame;
+        COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(
+                &collFrame, actor, actorList->val);
+        if (ret == COLL_FRAME_CALC_NO_COLLISION)
+            continue;
+        if (ret == COLL_FRAME_CALC_UNHANDLED_TYPES)
+        {
+            printf("warning! Ignoring collision between unhandled types\n");
+            continue;
+        }
+        if (collFrame <= collInfo->collFrame)
+            continue;
+
+        if (actorList->val->nextScheduledCollision && \
+            actorList->val->nextScheduledCollision->collFrame <= collFrame)
+            continue;
+
+        collInfo->actor2 = actorList->val;
+        collInfo->collFrame = collFrame;
+        collInfo->collGroup = collGroup;
+    }
+}
