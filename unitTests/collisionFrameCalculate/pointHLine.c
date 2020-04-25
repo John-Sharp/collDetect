@@ -1,6 +1,5 @@
-#include "pointVLine.h"
-#include "../collDetect.h"
-#include "../collisionFrameCalculate.h"
+#include "pointHLine.h"
+#include "../../collisionFrameCalculate.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -10,18 +9,18 @@ static void testMissesGTGT()
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
-            .point = {{5, 15}}
+            .point = {{31, 20}}
         },
-        .vel = {.v = {{20,-3}}, .s = 1}
+        .vel = {.v = {{5,-17}}, .s = 1}
     };
-
+    
     collActor ca2 = {
-        .type = COLL_ACTOR_TYPE_V_LINE,
+        .type = COLL_ACTOR_TYPE_H_LINE,
         .shape = {
             .line = {
-                .direction = AX_PL_DIR_Y,
-                .rStart = {{15,0}},
-                .length = 11
+                .direction = AX_PL_DIR_X,
+                .rStart = {{15,11}},
+                .length = 15
             }
         },
         .vel = {.v = {{0,0}}, .s = 1}
@@ -31,9 +30,10 @@ static void testMissesGTGT()
 
     if (ret != COLL_FRAME_CALC_NO_COLLISION)
     {
-        printf("testMissesGTGT: `calculateNextCollisionFrame` fails when point passes above vertical line");
+        printf("`testMissesGTGT` fails when point passes to right of horizontal line");
         exit(1);
     }
+
 }
 
 static void testMissesGTEQ()
@@ -42,18 +42,18 @@ static void testMissesGTEQ()
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
-            .point = {{5, 15}}
+            .point = {{38, 17}}
         },
-        .vel = {.v = {{20,-6}}, .s = 1}
+        .vel = {.v = {{-13,-14}}, .s = 1}
     };
     
     collActor ca2 = {
-        .type = COLL_ACTOR_TYPE_V_LINE,
+        .type = COLL_ACTOR_TYPE_H_LINE,
         .shape = {
             .line = {
-                .direction = AX_PL_DIR_Y,
-                .rStart = {{15,0}},
-                .length = 11
+                .direction = AX_PL_DIR_X,
+                .rStart = {{15,11}},
+                .length = 15
             }
         },
         .vel = {.v = {{0,0}}, .s = 1}
@@ -63,7 +63,7 @@ static void testMissesGTEQ()
 
     if (ret != COLL_FRAME_CALC_NO_COLLISION)
     {
-        printf("testMissesGTEQ: `calculateNextCollisionFrame` fails when point passes above vertical line");
+        printf("`testMissesGTEQ` fails when noooo point passes to right of horizontal line");
         exit(1);
     }
 
@@ -75,18 +75,18 @@ static void testMissesEQGT()
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
-            .point = {{5, 5}}
+            .point = {{26, 17}}
         },
-        .vel = {.v = {{17, 13}}, .s = 1}
+        .vel = {.v = {{11,-14}}, .s = 1}
     };
     
     collActor ca2 = {
-        .type = COLL_ACTOR_TYPE_V_LINE,
+        .type = COLL_ACTOR_TYPE_H_LINE,
         .shape = {
             .line = {
-                .direction = AX_PL_DIR_Y,
-                .rStart = {{15,0}},
-                .length = 11
+                .direction = AX_PL_DIR_X,
+                .rStart = {{15,11}},
+                .length = 15
             }
         },
         .vel = {.v = {{0,0}}, .s = 1}
@@ -96,9 +96,10 @@ static void testMissesEQGT()
 
     if (ret != COLL_FRAME_CALC_NO_COLLISION)
     {
-        printf("testMissesEQGT: `calculateNextCollisionFrame` fails when point passes above vertical line");
+        printf("`testMissesEQGT` fails when point passes to right of horizontal line");
         exit(1);
     }
+
 }
 
 static void testMissesLTEQ()
@@ -107,18 +108,18 @@ static void testMissesLTEQ()
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
-            .point = {{7, -5}}
+            .point = {{2, 17}}
         },
-        .vel = {.v = {{18, 9}}, .s = 1}
+        .vel = {.v = {{23,-14}}, .s = 1}
     };
     
     collActor ca2 = {
-        .type = COLL_ACTOR_TYPE_V_LINE,
+        .type = COLL_ACTOR_TYPE_H_LINE,
         .shape = {
             .line = {
-                .direction = AX_PL_DIR_Y,
-                .rStart = {{15,0}},
-                .length = 11
+                .direction = AX_PL_DIR_X,
+                .rStart = {{15,11}},
+                .length = 15
             }
         },
         .vel = {.v = {{0,0}}, .s = 1}
@@ -128,9 +129,10 @@ static void testMissesLTEQ()
 
     if (ret != COLL_FRAME_CALC_NO_COLLISION)
     {
-        printf("testMissesLTEQ: `calculateNextCollisionFrame` fails when point passes below vertical line");
+        printf("`testMissesLTEQ` fails when point passes to right of horizontal line");
         exit(1);
     }
+
 }
 
 static void testMissesEQLT()
@@ -139,18 +141,18 @@ static void testMissesEQLT()
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
-            .point = {{8, 4}}
+            .point = {{20, 15}}
         },
-        .vel = {.v = {{12, -11}}, .s = 1}
+        .vel = {.v = {{-16,-9}}, .s = 1}
     };
     
     collActor ca2 = {
-        .type = COLL_ACTOR_TYPE_V_LINE,
+        .type = COLL_ACTOR_TYPE_H_LINE,
         .shape = {
             .line = {
-                .direction = AX_PL_DIR_Y,
-                .rStart = {{15,0}},
-                .length = 11
+                .direction = AX_PL_DIR_X,
+                .rStart = {{15,11}},
+                .length = 15
             }
         },
         .vel = {.v = {{0,0}}, .s = 1}
@@ -160,9 +162,10 @@ static void testMissesEQLT()
 
     if (ret != COLL_FRAME_CALC_NO_COLLISION)
     {
-        printf("testMissesEQLT: `calculateNextCollisionFrame` fails when point passes below vertical line");
+        printf("`testMissesEQLT` fails when point passes to right of horizontal line");
         exit(1);
     }
+
 }
 
 static void testMissesLTLT()
@@ -171,18 +174,18 @@ static void testMissesLTLT()
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
-            .point = {{7, -1}}
+            .point = {{14, 16}}
         },
-        .vel = {.v = {{13, -6}}, .s = 1}
+        .vel = {.v = {{-10,-10}}, .s = 1}
     };
     
     collActor ca2 = {
-        .type = COLL_ACTOR_TYPE_V_LINE,
+        .type = COLL_ACTOR_TYPE_H_LINE,
         .shape = {
             .line = {
-                .direction = AX_PL_DIR_Y,
-                .rStart = {{15,0}},
-                .length = 11
+                .direction = AX_PL_DIR_X,
+                .rStart = {{15,11}},
+                .length = 15
             }
         },
         .vel = {.v = {{0,0}}, .s = 1}
@@ -192,9 +195,10 @@ static void testMissesLTLT()
 
     if (ret != COLL_FRAME_CALC_NO_COLLISION)
     {
-        printf("testMissesLTLT: `calculateNextCollisionFrame` fails when point passes below vertical line");
+        printf("`testMissesLTLT` fails when point passes to right of horizontal line");
         exit(1);
     }
+
 }
 
 static void testCalculateFrame()
@@ -205,15 +209,15 @@ static void testCalculateFrame()
         .shape = {
             .point = {{10, 10}}
         },
-        .vel = {.v = {{5,2}}, .s = 6}
+        .vel = {.v = {{2,5}}, .s = 6}
     };
     
     collActor ca2 = {
-        .type = COLL_ACTOR_TYPE_V_LINE,
+        .type = COLL_ACTOR_TYPE_H_LINE,
         .shape = {
             .line = {
-                .direction = AX_PL_DIR_Y,
-                .rStart = {{15,10}},
+                .direction = AX_PL_DIR_X,
+                .rStart = {{10,15}},
                 .length = 11
             }
         },
@@ -241,18 +245,18 @@ static void testHitsGTEQ()
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
-            .point = {{7, 14}}
+            .point = {{35, 16}},
         },
-        .vel = {.v = {{13, -11}}, .s = 1}
+        .vel = {.v = {{-15,-9}}, .s = 1}
     };
     
     collActor ca2 = {
-        .type = COLL_ACTOR_TYPE_V_LINE,
+        .type = COLL_ACTOR_TYPE_H_LINE,
         .shape = {
             .line = {
-                .direction = AX_PL_DIR_Y,
-                .rStart = {{15,0}},
-                .length = 11
+                .direction = AX_PL_DIR_X,
+                .rStart = {{15,11}},
+                .length = 15
             }
         },
         .vel = {.v = {{0,0}}, .s = 1}
@@ -262,12 +266,13 @@ static void testHitsGTEQ()
 
     if (ret == COLL_FRAME_CALC_NO_COLLISION || f != 0)
     {
-        printf("testHitsGTEQ: `calculateNextCollisionFrame` fails to calculate correct frame of collision");
+        printf("`testHitsGTEQ` fails to calculate correct frame of collision");
         exit(1);
     }
+
 }
 
-void subTestsPointVLine()
+void subTestsPointHLine()
 {
     testMissesGTGT();
     testMissesGTEQ();

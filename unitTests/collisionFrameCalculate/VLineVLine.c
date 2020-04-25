@@ -1,6 +1,5 @@
 #include "VLineVLine.h"
-#include "../collDetect.h"
-#include "../collisionFrameCalculate.h"
+#include "../../collisionFrameCalculate.h"
 #include <stdlib.h>
 #include <stdio.h>
 
