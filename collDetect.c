@@ -238,12 +238,10 @@ void collEngineProcessFrame(collEngine * eng)
     // search through this->scheduledCollisions for collisions that happen at
     // this->frame
     collInfoList * schedCollN;
-    collInfoList * schedCollNPrev = NULL;
     for (schedCollN = this->scheduledCollisions; schedCollN != NULL;)
     {
         if (schedCollN->val->collFrame != this->frame)
         {
-            schedCollNPrev = schedCollN;
             schedCollN = schedCollN->next;
             continue;
         }
@@ -254,20 +252,30 @@ void collEngineProcessFrame(collEngine * eng)
             schedCollN->val->actor2
                 );
 
-        schedCollN->val->actor1->nextScheduledCollision = NULL;
-        schedCollN->val->actor2->nextScheduledCollision = NULL;
+        collActor * actor1 = schedCollN->val->actor1;
+        actor1->nextScheduledCollision = NULL;
+        collActor * actor2 = schedCollN->val->actor2;
 
         // calculate next collision for actors putting them on list at/after
         // schedCollN->next
         collEngineCollActorCalculateNextCollision(
-                this, schedCollN->val->actor1, &schedCollN->next);
+                this, actor1, &schedCollN->next);
+        actor2->nextScheduledCollision = NULL;
+        collEngineCollActorCalculateNextCollision(
+                this, actor2, &schedCollN->next);
 
         // TODO rather than dynamically allocating/releasing memory for
         // collInfo, have a pool of collInfo objects
-        if (schedCollNPrev)
-            schedCollNPrev->next = schedCollN->next;
+        if (schedCollN->prev)
+            schedCollN->prev->next = schedCollN->next;
+        if (schedCollN->next)
+            schedCollN->next->prev = schedCollN->prev;
+        collInfoList * schedCollNOld = schedCollN;
         schedCollN = schedCollN->next;
-        free(schedCollN);
+        if (this->scheduledCollisions == schedCollNOld)
+            this->scheduledCollisions = schedCollN;
+
+        free(schedCollNOld);
     }
 
     this->frame++;

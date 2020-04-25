@@ -7,6 +7,8 @@
 
 #include <assert.h>
 
+#include "mockCollisionFrameCalculate.h"
+
 static bool mallocShouldFailOnFirstAttempt()
 {
     return true;
@@ -259,9 +261,161 @@ static void testCollEngineCollActorRegisterDeregister()
     }
 }
 
+static void subTestObjA1ObjB1Frame0();
 static void testCollEngineProcessFrame()
 {
+    subTestObjA1ObjB1Frame0();
 
+}
+
+typedef struct CNCFCallInfo
+{
+    jint called;
+    const collActor * ca1;
+    const collActor * ca2;
+} CNCFCallInfo;
+
+static COLL_FRAME_CALC_RET testCNCF(
+        jint * collFrame, const collActor * ca1, const collActor * ca2,
+        void * context)
+{
+    CNCFCallInfo * info = (CNCFCallInfo *)context;
+
+    info->called++;
+    info->ca1 = ca1;
+    info->ca2 = ca2;
+
+    *collFrame = 0;
+    return COLL_FRAME_CALC_OK;
+}
+
+typedef struct testHandlerCallInfo
+{
+    jint called;
+    collActor * ca1;
+    collActor * ca2;
+} testHandlerCallInfo;
+testHandlerCallInfo tHCallInfo;
+
+static void testHandler(collActor * ca1, collActor * ca2)
+{
+    tHCallInfo.called++;
+    tHCallInfo.ca1 = ca1;
+    tHCallInfo.ca2 = ca2;
+    setMockCalculateNextCollisionFrame(NULL);
+}
+
+static void subTestObjA1ObjB1Frame0()
+{
+    // Create object of categoryNumber 'A', object of categoryNumber 'B',
+    // calculate their collision frame for frame 0. Verify that collision frame
+    // calculation function is called and that handler is called on first call
+    // of process frame
+    collEngine * eng = createCollEngine();
+    juint catNumA = 1;
+    juint catNumB = 2;
+
+    collActor actorA = {
+        .type = COLL_ACTOR_TYPE_POINT,
+        .shape = {.point = {{234,234}}},
+        .vel = {.s = 1, .v = {{1,1}}},
+        .categoryNumber = catNumA,
+        .frameStart = 0,
+        .collFrame =1
+    };
+    
+    collActor actorB = {
+        .type = COLL_ACTOR_TYPE_POINT,
+        .shape = {.point = {{567,567}}},
+        .vel = {.s = 1, .v = {{1,1}}},
+        .categoryNumber = catNumB,
+        .frameStart = 0,
+        .collFrame =1
+    };
+
+    CNCFCallInfo info = {.called = 0};
+    setMockCalculateNextCollisionFrame(testCNCF);
+    setMockCalcuateNextCollisionFrameContext(&info);
+
+    collEngineUpsertCollGroup(eng, catNumA, catNumB, testHandler);
+    collEngineRegisterCollActor(eng, &actorA);
+    collEngineRegisterCollActor(eng, &actorB);
+
+    if (info.called != 1)
+    {
+        printf("subTestObjA1ObjB1Frame0(): calculate next collision frame "
+                "not called expected number of times\n");
+        assert(0);
+    }
+
+    jint expectedArguments = 0;
+    if (info.ca1 == &actorA)
+    {
+        if (info.ca2 == &actorB)
+        {
+            expectedArguments = 1;
+        }
+    }
+    else if (info.ca1 == &actorB)
+    {
+        if (info.ca2 == &actorA)
+        {
+            expectedArguments = 1;
+        }
+    }
+
+    if (!expectedArguments)
+    {
+        printf("subTestObjA1ObjB1Frame0(): calculate next collision frame "
+                "not called with expected arguments\n");
+        assert(0);
+    }
+
+    tHCallInfo.called = 0;
+
+    collEngineProcessFrame(eng);
+
+    if (tHCallInfo.called != 1)
+    {
+        printf("subTestObjA1ObjB1Frame0(): collision handler "
+                "not called expected number of times\n");
+        assert(0);
+    }
+
+    expectedArguments = 0;
+    if (tHCallInfo.ca1 == &actorA)
+    {
+        if (tHCallInfo.ca2 == &actorB)
+        {
+            expectedArguments = 1;
+        }
+    }
+    else if (tHCallInfo.ca1 == &actorB)
+    {
+        if (tHCallInfo.ca2 == &actorA)
+        {
+            expectedArguments = 1;
+        }
+    }
+
+    if (!expectedArguments)
+    {
+        printf("subTestObjA1ObjB1Frame0(): collision handler "
+                "not called with expected arguments\n");
+        assert(0);
+    }
+
+    tHCallInfo.called = 0;
+    collEngineProcessFrame(eng);
+    collEngineProcessFrame(eng);
+    collEngineProcessFrame(eng);
+
+    if (tHCallInfo.called != 0)
+    {
+        printf("subTestObjA1ObjB1Frame0(): collision handler "
+                "called after collision shoud've been resolved\n");
+        assert(0);
+    }
 }
 
 static void populateCollList(collEngine * eng)
