@@ -1,4 +1,6 @@
 #include "../collDetect.h"
+#include "../collisionFrameCalculate.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -47,6 +49,7 @@ static void testCreateCollEngine();
 static void testCollEngineCollGroupAddRm();
 static void testCollEngineCollGroupRmCat();
 static void testCollEngineCollActorRegisterDeregister();
+static void testCollEngineProcessFrame();
 
 int main()
 {
@@ -55,6 +58,8 @@ int main()
     testCollEngineCollGroupAddRm();
     testCollEngineCollGroupRmCat();
     testCollEngineCollActorRegisterDeregister();
+
+    testCollEngineProcessFrame();
 
     // tests of collision calculateNextCollisionFrame()
     testUnhandledTypes();
@@ -295,6 +300,11 @@ static void testCollEngineCollActorRegisterDeregister()
                 "and then destroying engine, memory allocated does not equal memory freed\n");
         assert(0);
     }
+}
+
+static void testCollEngineProcessFrame()
+{
+
 }
 
 static void populateCollList(collEngine * eng)
