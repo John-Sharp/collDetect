@@ -9,11 +9,23 @@ generateCollDetectListCode: ../../../dataStructures/templates/listTemplate.h ../
 	../../../dataStructures/generateList.py ../../listHeaders ../../listCode collActorCategoryNumberGrouped:collActorCategoryNumberGrouped
 	../../../dataStructures/generateList.py ../../listHeaders ../../listCode collInfo:collInfo
 
-all: generateCollDetectListCode main.c ../../../jTypes/jTypes.h ../../../jTypes/jTypes.c ../../collDetect.h ../../collDetect.c\
+generateCollDetectListCodeTest: ../../../dataStructures/templates/listTemplate.h\
+	../../../dataStructures/templates/listTemplate.inc
+	mkdir -p listHeaders listCode
+	../../../dataStructures/generateList.py listHeaders listCode\
+		collisionCalcResult:collisionCalcResult
+	../../../dataStructures/generateList.py listHeaders listCode\
+		int:int
+
+all: generateCollDetectListCode\
+	generateCollDetectListCodeTest\
+	main.c ../../../jTypes/jTypes.h ../../../jTypes/jTypes.c ../../collDetect.h ../../collDetect.c\
+	subTestProcessFrameScenario.c\
 	subTestObjA1ObjB1FrameX.c\
 	subTestObjA1ObjB1Frame12ObjA1ObjC1Frame5.c\
 	../../collisionFrameCalculate.h mockCollisionFrameCalculate.c
 	$(CC) $(CFLAGS) -include  ../../../studiousBroccoli/utils/testMallocTracker/malloc_redefinition.h main.c ../../collDetect.c\
+		subTestProcessFrameScenario.c\
 		subTestObjA1ObjB1FrameX.c\
 		subTestObjA1ObjB1Frame12ObjA1ObjC1Frame5.c\
 		mockCollisionFrameCalculate.c ../../../jTypes/jTypes.c -L ../../../studiousBroccoli/utils/testMallocTracker  -Wl,-rpath=$(shell pwd)/../../../studiousBroccoli/utils/testMallocTracker -ltestMallocTracker -I../../../studiousBroccoli/utils/testMallocTracker  -o unitTests

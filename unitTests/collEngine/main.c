@@ -262,11 +262,14 @@ static void testCollEngineCollActorRegisterDeregister()
 void subTestObjA1ObjB1Frame0();
 void subTestObjA1ObjB1Frame12();
 void subTestObjA1ObjB1Frame12ObjA1ObjC1Frame5();
+void subTestProcessFrameScenario(const char * scenario);
 static void testCollEngineProcessFrame()
 {
     subTestObjA1ObjB1Frame0();
     subTestObjA1ObjB1Frame12();
     subTestObjA1ObjB1Frame12ObjA1ObjC1Frame5();
+
+    subTestProcessFrameScenario("1,1:(0,0)(1,0)0_0(0,0)(1,0)");
 }
 
 static void populateCollList(collEngine * eng)
