@@ -478,11 +478,11 @@ static void collEngineCollActorCalculateNextCollisionReturnOrphan(
         struct collInfo * nsColl = collInfo.actor2->nextScheduledCollision->val;
         if (nsColl->actor1 == collInfo.actor2)
         {
-            *orphanedActor = nsColl->actor1;
+            *orphanedActor = nsColl->actor2;
         }
         else
         {
-            *orphanedActor = collInfo.actor2;
+            *orphanedActor = nsColl->actor1;
         }
 
         *nsColl = collInfo;
