@@ -447,7 +447,7 @@ static void collEngineCollActorCalculateNextCollisionReturnOrphan(
     collInfo collInfo = {
         .actor1 = actor,
         .actor2 = NULL,
-        .collFrame = this->frame - 1,
+        .collFrame = 0,
         .collGroup = NULL
     };
 
@@ -550,7 +550,9 @@ static void collEnginePopulateCollisionInfoForActorWithGroup(
             printf("warning! Ignoring collision between unhandled types\n");
             continue;
         }
-        if (collFrame <= collInfo->collFrame)
+        if (collInfo->actor2 && collFrame >= collInfo->collFrame)
+            continue;
+        if (collFrame < this->frame)
             continue;
 
         if (actorList->val->nextScheduledCollision && \

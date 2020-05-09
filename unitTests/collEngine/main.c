@@ -265,11 +265,13 @@ void subTestObjA1ObjB1Frame12ObjA1ObjC1Frame5();
 void subTestProcessFrameScenario(const char * scenario);
 static void testCollEngineProcessFrame()
 {
-    subTestObjA1ObjB1Frame0();
-    subTestObjA1ObjB1Frame12();
-    subTestObjA1ObjB1Frame12ObjA1ObjC1Frame5();
-
     subTestProcessFrameScenario("1,1:(0,0)(1,0)0_0(0,0)(1,0)");
+    subTestProcessFrameScenario("1,1:(0,0)(1,0)12_12(0,0)(1,0)");
+    subTestProcessFrameScenario("5,5:(0,0)(1,0)12_12(0,0)(1,0)");
+    subTestProcessFrameScenario("5,5:(0,3)(1,2)12_12(0,3)(1,2)");
+    subTestProcessFrameScenario("5,5,1:(0,0)(1,0)12_12(0,0)(1,0)");
+
+    subTestProcessFrameScenario("1,1,1:(0,0)(1,0)12(0,0)(2,0)5_5(0,0)(2,0)12(0,0)(1,0)");
 }
 
 static void populateCollList(collEngine * eng)

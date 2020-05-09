@@ -134,6 +134,7 @@ void subTestProcessFrameScenario(const char * scenarioDescription)
     scenario.receivedCollisionResults = NULL;
     int nextRunEngineUntil = -1;
     collisionCalcResultList * l;
+    int framesProcessed = 0;
     for (l = scenario.expectedCollisionResults; l != NULL; l = l->next)
     {
         if (*l->val->resultFrames->val > nextRunEngineUntil)
@@ -150,8 +151,7 @@ void subTestProcessFrameScenario(const char * scenarioDescription)
             scenario.receivedCollisionResults = NULL;
 
             nextRunEngineUntil = *l->val->resultFrames->val;
-            int i;
-            for (i = 0; i < nextRunEngineUntil; i++)
+            for (; framesProcessed < nextRunEngineUntil; framesProcessed++)
             {
                 collEngineProcessFrame(eng);
                 // check nothing has happened
@@ -163,6 +163,7 @@ void subTestProcessFrameScenario(const char * scenarioDescription)
             }
 
             collEngineProcessFrame(eng);
+            framesProcessed++;
         }
 
         // check that expected actors' collision handler called
@@ -225,8 +226,6 @@ static void createActorsForCollGroup(
         struct scenario * scenario, collEngine * eng,
         int numActorsInCategory)
 {
-    printf("creating %d actors in category X\n", numActorsInCategory);
-
     int i;
     for (i = 0; i < numActorsInCategory; i++)
     {
@@ -376,7 +375,7 @@ static const char * parseAndCreateScenarioExpectations(
             continue;
         }
 
-        scenario->expectedCollisionResults = collisionCalcResultListAdd(
+        scenario->expectedCollisionResults = collisionCalcResultListAddToEnd(
             scenario->expectedCollisionResults,
             parseExpectedCollisionResult(&c, scenario, frame));
 
