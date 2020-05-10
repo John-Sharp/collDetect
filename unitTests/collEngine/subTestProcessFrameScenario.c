@@ -138,17 +138,6 @@ void subTestProcessFrameScenario(const char * scenarioDescription)
     {
         if (*l->val->resultFrames->val > nextRunEngineUntil)
         {
-            collisionCalcResultList * la;
-            for (la = scenario.receivedCollisionResults; la != NULL;)
-            {
-                collisionCalcResultList * laOld = la;
-                la = la->next;
-
-                free(laOld->val);
-                free(laOld);
-            }
-            scenario.receivedCollisionResults = NULL;
-
             nextRunEngineUntil = *l->val->resultFrames->val;
             for (; framesProcessed < nextRunEngineUntil; framesProcessed++)
             {
@@ -166,22 +155,33 @@ void subTestProcessFrameScenario(const char * scenarioDescription)
         }
 
         // check that expected actors' collision handler called
-        collisionCalcResultList * la;
-        int found = 0;
-        for (la = scenario.receivedCollisionResults; la != NULL; la = la->next)
+        if (!scenario.receivedCollisionResults)
         {
-            if (UNORDERED_MATCH(la->val->a1, la->val->a2, 
-                        l->val->a1, l->val->a2))
-            {
-                found++;
-            }
+            printf("collision handler not called when expected\n");
+            assert(0);
         }
 
-        if (found != 1)
+        if (!UNORDERED_MATCH(l->val->a1, l->val->a2,
+            scenario.receivedCollisionResults->val->a1,
+            scenario.receivedCollisionResults->val->a2))
         {
             printf("expected collision handler not called\n");
             assert(0);
         }
+
+        collisionCalcResultList * listOld = scenario.expectedCollisionResults;
+        scenario.expectedCollisionResults = scenario.expectedCollisionResults->next;
+        if (scenario.expectedCollisionResults)
+            scenario.expectedCollisionResults->prev = NULL;
+        free(listOld->val);
+        free(listOld);
+
+        listOld = scenario.receivedCollisionResults;
+        scenario.receivedCollisionResults = scenario.receivedCollisionResults->next;
+        if (scenario.receivedCollisionResults)
+            scenario.receivedCollisionResults->prev = NULL;
+        free(listOld->val);
+        free(listOld);
     }
 }
 
