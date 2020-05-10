@@ -271,7 +271,11 @@ static void testCollEngineProcessFrame()
     subTestProcessFrameScenario("5,5:(0,3)(1,2)12_12(0,3)(1,2)");
     subTestProcessFrameScenario("5,5,1:(0,0)(1,0)12_12(0,0)(1,0)");
 
-    subTestProcessFrameScenario("1,1,1:(0,0)(1,0)12(0,0)(2,0)5_5(0,0)(2,0)12(0,0)(1,0)");
+    subTestProcessFrameScenario("1,1,1:(0,0)(1,0)12,12(0,0)(2,0)5,_5(0,0)(2,0)12(0,0)(1,0)");
+
+    subTestProcessFrameScenario("1,1:(0,0)(1,0)12,15_12(0,0)(1,0)15(0,0)(1,0)");
+
+    subTestProcessFrameScenario("1,1,1:(0,0)(1,0)12,(0,0)(2,0),12_12(0,0)(1,0)12(0,0)(2,0)");
 }
 
 static void populateCollList(collEngine * eng)

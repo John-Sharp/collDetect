@@ -43,24 +43,23 @@ static void testHandler(collActor * ca1, collActor * ca2)
     // set the next result for this pair (by popping off
     // the pair's `resultFrames` list)
     // add record of this collision to `receivedCollisionResults`
-
     collisionCalcResultList * l;
     for (l = scenario_global->collisionResults; l != NULL; l = l->next)
     {
-        if (UNORDERED_MATCH(l->val->a1, l->val->a2, ca1, ca2))
+        if (l->val->a1 == ca1 || l->val->a1 == ca2
+                || l->val->a2 == ca1 || l->val->a2 == ca2)
         {
-            break;
+            if (l->val->resultFrames)
+            {
+                intList * resultFrameOld = l->val->resultFrames;
+                l->val->resultFrames = l->val->resultFrames->next;
+                if (l->val->resultFrames)
+                    l->val->resultFrames->prev = NULL;
+                if (resultFrameOld->val)
+                    free(resultFrameOld->val);
+                free(resultFrameOld);
+            }
         }
-    }
-
-    if (l && l->val->resultFrames)
-    {
-        intList * resultFrameOld = l->val->resultFrames;
-        l->val->resultFrames = l->val->resultFrames->next;
-        if (l->val->resultFrames)
-            l->val->resultFrames->prev = NULL;
-        free(resultFrameOld->val);
-        free(resultFrameOld);
     }
 
     collisionCalcResult * r = malloc(sizeof(*r));
@@ -85,7 +84,7 @@ static COLL_FRAME_CALC_RET testCNCF(
     {
         if (UNORDERED_MATCH(l->val->a1, l->val->a2, ca1, ca2))
         {
-            if (l->val->resultFrames)
+            if (l->val->resultFrames && l->val->resultFrames->val)
             {
                 *collFrame = *l->val->resultFrames->val;
                 return COLL_FRAME_CALC_OK;
@@ -277,19 +276,18 @@ static collActor * findActor(struct scenario * scenario, int catNum, int actorNu
 static collisionCalcResult * parseCollisionCalcResult(
         struct scenario * scenario, const char ** c)
 {
-    int catNum1, catNum2, actorNum1, actorNum2, frame;
+    int catNum1, catNum2, actorNum1, actorNum2;
     int pos;
 
-    int res = sscanf(*c, "(%d,%d)(%d,%d)%d%n",
+    int res = sscanf(*c, "(%d,%d)(%d,%d)%n",
             &catNum1,
             &actorNum1,
             &catNum2,
             &actorNum2,
-            &frame,
             &pos
             );
 
-    assert(res == 5);
+    assert(res == 4);
 
     *c = *c + pos;
 
@@ -302,21 +300,33 @@ static collisionCalcResult * parseCollisionCalcResult(
     ret->a2 = findActor(scenario, catNum2, actorNum2);
     assert(ret->a2);
 
-    int * frameP = malloc(sizeof(*frameP));
-    assert(frameP);
-    *frameP = frame;
-    ret->resultFrames =  intListAdd(ret->resultFrames, frameP);
+    ret->resultFrames = NULL;
 
-    int frameOld = frame;
-    while (sscanf(*c, ",%d%n", &frame, &pos))
+    if (!CHAR_IS_DIGIT(**c) && **c != ',')
     {
-        assert(frame >= frameOld);
-        frameOld = frame;
-        int * frameP = malloc(sizeof(*frameP));
-        assert(frameP);
-        *frameP = frame;
+        return ret;
+    }
+
+
+    while (1)
+    {
+        int * frameP = NULL;
+        int frame;
+        if (sscanf(*c, "%d%n", &frame, &pos))
+        {
+            frameP = malloc(sizeof(*frameP));
+            *frameP = frame;
+            *c += pos;
+        }
         ret->resultFrames =  intListAddToEnd(ret->resultFrames, frameP);
-        *c += pos;
+        if (**c == ',')
+        {
+            *c += 1;
+        }
+        else
+        {
+            break;
+        }
     }
 
     return ret;
@@ -366,7 +376,7 @@ static const char * parseAndCreateScenarioExpectations(
             int frameOld = frame;
             int res = sscanf(c, "%d%n", &frame, &pos);
             assert(res==1);
-            assert(frame > frameOld);
+            assert(frame >= frameOld);
             c += pos - 1;
             continue;
         }
