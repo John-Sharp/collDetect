@@ -56,6 +56,9 @@ void collEngineRegisterCollActor(collEngine * eng,
 void collEngineDeregisterCollActor(collEngine * eng,
         collActor * actor);
 
+void collEngineCollActorSetVelocity(collEngine * eng,
+        collActor * actor, const jintVecScaled * v);
+
 void collEngineProcessFrame(collEngine * eng);
 
 #endif

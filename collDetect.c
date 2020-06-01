@@ -231,6 +231,54 @@ void collEngineDeregisterCollActor(collEngine * eng,
             this, orphanedActor, &this->scheduledCollisions);
 }
 
+void collEngineCollActorSetVelocity(collEngine * eng,
+        collActor * actor, const jintVecScaled * v)
+{
+    collEngineInternal * this = (collEngineInternal *)eng;
+
+    actor->vel = *v;
+    if (actor->nextScheduledCollision)
+    {
+        collActor * ca1 = actor->nextScheduledCollision->val->actor1;
+        collActor * ca2 = actor->nextScheduledCollision->val->actor2;
+        
+        collInfoList * oldNextScheduledCollision = NULL;
+        oldNextScheduledCollision = collInfoListNodeMv( 
+                oldNextScheduledCollision, &this->scheduledCollisions,
+                ca1->nextScheduledCollision);
+        free(oldNextScheduledCollision->val);
+        free(oldNextScheduledCollision);
+        ca1->nextScheduledCollision = NULL;
+        ca2->nextScheduledCollision = NULL;
+
+        collEngineCollActorCalculateNextCollision(
+                this, ca1, &this->scheduledCollisions);
+
+        // if ca1 detected to collide with ca2, can free the 
+        // collInfo object prior to calculating next collision
+        // of ca2, since if this collision is indeed the next
+        // collision of ca2 it will be recalculated when we
+        // calculate ca2's next collision
+        if (ca2->nextScheduledCollision != NULL)
+        {
+            ca2->nextScheduledCollision = NULL;
+            oldNextScheduledCollision = collInfoListNodeMv( 
+                    oldNextScheduledCollision, &this->scheduledCollisions,
+                    ca1->nextScheduledCollision);
+            free(oldNextScheduledCollision->val);
+            free(oldNextScheduledCollision);
+        }
+
+        collEngineCollActorCalculateNextCollision(
+                this, ca2, &this->scheduledCollisions);
+    }
+    else
+    {
+        collEngineCollActorCalculateNextCollision(
+                this, actor, &this->scheduledCollisions);
+    }
+}
+
 void collEngineProcessFrame(collEngine * eng)
 {
     collEngineInternal * this = (collEngineInternal *)eng;

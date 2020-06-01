@@ -23,11 +23,13 @@ all: generateCollDetectListCode\
 	subTestProcessFrameScenario.c\
 	subTestObjA1ObjB1FrameX.c\
 	subTestObjA1ObjB1Frame12ObjA1ObjC1Frame5.c\
+	testCollEngineSetVelocity.c\
 	../../collisionFrameCalculate.h mockCollisionFrameCalculate.c
 	$(CC) $(CFLAGS) -include  ../../../studiousBroccoli/utils/testMallocTracker/malloc_redefinition.h main.c ../../collDetect.c\
 		subTestProcessFrameScenario.c\
 		subTestObjA1ObjB1FrameX.c\
 		subTestObjA1ObjB1Frame12ObjA1ObjC1Frame5.c\
+		testCollEngineSetVelocity.c\
 		mockCollisionFrameCalculate.c ../../../jTypes/jTypes.c -L ../../../studiousBroccoli/utils/testMallocTracker  -Wl,-rpath=$(shell pwd)/../../../studiousBroccoli/utils/testMallocTracker -ltestMallocTracker -I../../../studiousBroccoli/utils/testMallocTracker  -o unitTests
 	./unitTests
 	gcov collDetect.c

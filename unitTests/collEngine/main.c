@@ -17,6 +17,8 @@ static void testCollEngineCollGroupAddRm();
 static void testCollEngineCollGroupRmCat();
 static void testCollEngineCollActorRegisterDeregister();
 static void testCollEngineProcessFrame();
+void testCollEngineSetVelocityPrevCollision();
+void testCollEngineSetVelocityNoPrevCollision();
 
 int main()
 {
@@ -27,6 +29,8 @@ int main()
     testCollEngineCollActorRegisterDeregister();
 
     testCollEngineProcessFrame();
+    testCollEngineSetVelocityPrevCollision();
+    testCollEngineSetVelocityNoPrevCollision();
 }
 
 static void populateCollList(collEngine * eng);
@@ -62,6 +66,7 @@ static void testCreateCollEngine()
 
     allocatorTrackerReset();
 
+    extern bool (*mallocShouldFail)();
     mallocShouldFail = mallocShouldFailOnFirstAttempt; 
     eng = createCollEngine();
 
