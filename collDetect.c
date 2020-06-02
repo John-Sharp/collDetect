@@ -241,7 +241,7 @@ void collEngineCollActorSetVelocity(collEngine * eng,
     {
         collActor * ca1 = actor->nextScheduledCollision->val->actor1;
         collActor * ca2 = actor->nextScheduledCollision->val->actor2;
-        
+
         collInfoList * oldNextScheduledCollision = NULL;
         oldNextScheduledCollision = collInfoListNodeMv( 
                 oldNextScheduledCollision, &this->scheduledCollisions,
@@ -262,9 +262,13 @@ void collEngineCollActorSetVelocity(collEngine * eng,
         if (ca2->nextScheduledCollision != NULL)
         {
             ca2->nextScheduledCollision = NULL;
+
+            oldNextScheduledCollision = NULL;
             oldNextScheduledCollision = collInfoListNodeMv( 
                     oldNextScheduledCollision, &this->scheduledCollisions,
                     ca1->nextScheduledCollision);
+            ca1->nextScheduledCollision = NULL;
+
             free(oldNextScheduledCollision->val);
             free(oldNextScheduledCollision);
         }
