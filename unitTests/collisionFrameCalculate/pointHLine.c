@@ -2,10 +2,12 @@
 #include "../../collisionFrameCalculate.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 
 static void testMissesGTGT()
 {
     jint f;
+    jintVec norm;
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
@@ -26,7 +28,7 @@ static void testMissesGTGT()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &norm, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_NO_COLLISION)
     {
@@ -39,6 +41,7 @@ static void testMissesGTGT()
 static void testMissesGTEQ()
 {
     jint f;
+    jintVec norm;
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
@@ -59,11 +62,11 @@ static void testMissesGTEQ()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &norm, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_NO_COLLISION)
     {
-        printf("`testMissesGTEQ` fails when noooo point passes to right of horizontal line");
+        printf("`testMissesGTEQ` fails when point passes to right of horizontal line");
         exit(1);
     }
 
@@ -72,6 +75,8 @@ static void testMissesGTEQ()
 static void testMissesEQGT()
 {
     jint f;
+    jintVec norm;
+
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
@@ -92,7 +97,7 @@ static void testMissesEQGT()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &norm, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_NO_COLLISION)
     {
@@ -105,6 +110,8 @@ static void testMissesEQGT()
 static void testMissesLTEQ()
 {
     jint f;
+    jintVec norm;
+
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
@@ -125,7 +132,7 @@ static void testMissesLTEQ()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &norm, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_NO_COLLISION)
     {
@@ -138,6 +145,7 @@ static void testMissesLTEQ()
 static void testMissesEQLT()
 {
     jint f;
+    jintVec norm;
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
@@ -158,7 +166,7 @@ static void testMissesEQLT()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &norm, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_NO_COLLISION)
     {
@@ -171,6 +179,8 @@ static void testMissesEQLT()
 static void testMissesLTLT()
 {
     jint f;
+    jintVec norm;
+
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
@@ -191,7 +201,7 @@ static void testMissesLTLT()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &norm, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_NO_COLLISION)
     {
@@ -204,6 +214,8 @@ static void testMissesLTLT()
 static void testCalculateFrame()
 {
     jint f;
+    jintVec norm;
+
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
@@ -224,7 +236,7 @@ static void testCalculateFrame()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &norm, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_OK)
     {
@@ -237,11 +249,19 @@ static void testCalculateFrame()
         printf("`calculateNextCollisionFrame` fails to calclate correct frame of collision");
         exit(1);
     }
+
+    if (norm.v[0] != 0 || norm.v[1] != -1)
+    {
+        printf("`calculateNextCollisionFrame` fails to calclate correct norm");
+        assert(0);
+    }
 }
 
 static void testHitsGTEQ()
 {
     jint f;
+    jintVec norm;
+
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
@@ -262,7 +282,7 @@ static void testHitsGTEQ()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &norm, &ca1, &ca2);
 
     if (ret == COLL_FRAME_CALC_NO_COLLISION || f != 0)
     {
@@ -270,6 +290,11 @@ static void testHitsGTEQ()
         exit(1);
     }
 
+    if (norm.v[0] != 0 || norm.v[1] != 1)
+    {
+        printf("`testHitsGTEQ` fails to calclate correct norm");
+        assert(0);
+    }
 }
 
 void subTestsPointHLine()

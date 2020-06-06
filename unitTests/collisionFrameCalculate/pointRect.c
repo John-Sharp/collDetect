@@ -2,10 +2,12 @@
 #include "../../collisionFrameCalculate.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 
 static void testHitsXLTEQ()
 {
     jint f;
+    jintVec norm;
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
@@ -25,18 +27,26 @@ static void testHitsXLTEQ()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &norm, &ca1, &ca2);
 
     if (ret == COLL_FRAME_CALC_NO_COLLISION || f != 35)
     {
         printf("`testHitsXLTEQ` fails to calculate correct frame of collision\n");
         exit(1);
     }
+
+    if (norm.v[0] != -1 || norm.v[1] != 0)
+    {
+        printf("`testHitsXLTEQ` fails to calculate correct norm\n");
+        assert(0);
+    }
 }
 
 static void testHitsXYLTGT()
 {
     jint f;
+    jintVec norm;
+
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
@@ -56,18 +66,26 @@ static void testHitsXYLTGT()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &norm, &ca1, &ca2);
 
     if (ret == COLL_FRAME_CALC_NO_COLLISION || f != 35)
     {
         printf("`testHitsXYLTGT` fails to calculate correct frame of collision\n");
         exit(1);
     }
+
+    if (norm.v[0] != -1 || norm.v[1] != 0)
+    {
+        printf("`testHitsXYLTGT` fails to calculate correct norm\n");
+        assert(0);
+    }
 }
 
 static void testHitsYEQLT()
 {
     jint f;
+    jintVec norm;
+
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_POINT,
         .shape = {
@@ -87,7 +105,7 @@ static void testHitsYEQLT()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &norm, &ca1, &ca2);
 
     if (ret == COLL_FRAME_CALC_NO_COLLISION || f != 15)
     {
@@ -95,7 +113,13 @@ static void testHitsYEQLT()
         exit(1);
     }
 
-    ret = calculateNextCollisionFrame(&f, &ca2, &ca1);
+    if (norm.v[0] != 0 || norm.v[1] != 1)
+    {
+        printf("`testHitsXLTEQ` fails to calculate correct norm\n");
+        assert(0);
+    }
+
+    ret = calculateNextCollisionFrame(&f, &norm, &ca2, &ca1);
 
     if (ret == COLL_FRAME_CALC_NO_COLLISION || f != 15)
     {
@@ -103,6 +127,14 @@ static void testHitsYEQLT()
                 " order swapped\n");
         exit(1);
     }
+
+    if (norm.v[0] != 0 || norm.v[1] != -1)
+    {
+        printf("`testHitsXLTEQ` fails to calculate correct norm when "
+                "order swapped\n");
+        assert(0);
+    }
+
 }
 
 void subTestsPointRect()

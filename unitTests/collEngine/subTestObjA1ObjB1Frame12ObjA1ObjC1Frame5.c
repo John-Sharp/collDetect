@@ -61,7 +61,7 @@ typedef struct testHandlerCallInfo
 testHandlerCallInfo tHCallInfoAB;
 testHandlerCallInfo tHCallInfoAC;
 
-static void testHandlerAB(collActor * ca1, collActor * ca2)
+static void testHandlerAB(collActor * ca1, collActor * ca2, const jintVec * norm)
 {
     tHCallInfoAB.called++;
     tHCallInfoAB.ca1 = ca1;
@@ -74,7 +74,7 @@ static void testHandlerAB(collActor * ca1, collActor * ca2)
     }
 }
 
-static void testHandlerAC(collActor * ca1, collActor * ca2)
+static void testHandlerAC(collActor * ca1, collActor * ca2, const jintVec * norm)
 {
     tHCallInfoAC.called++;
     tHCallInfoAC.ca1 = ca1;

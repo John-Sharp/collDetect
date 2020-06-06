@@ -38,7 +38,7 @@ typedef struct collActor {
 typedef struct collEngine
 {
 } collEngine;
-typedef void (*collHandler)(collActor * ca1, collActor * ca2);
+typedef void (*collHandler)(collActor * ca1, collActor * ca2, const jintVec * norm);
 
 collEngine * createCollEngine();
 void destroyCollEngine();

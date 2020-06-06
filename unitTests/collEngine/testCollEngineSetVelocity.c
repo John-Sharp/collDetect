@@ -43,7 +43,7 @@ static COLL_FRAME_CALC_RET testCNCF(
 static collActor * caExpected1 = NULL;
 static collActor * caExpected2 = NULL;
 static bool expectedReceived = false;
-static void testHandler(collActor * ca1, collActor * ca2)
+static void testHandler(collActor * ca1, collActor * ca2, const jintVec * norm)
 {
     if (UNORDERED_MATCH(
                 ca1, ca2,

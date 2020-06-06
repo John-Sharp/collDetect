@@ -2,10 +2,13 @@
 #include "../../collisionFrameCalculate.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 
 static void testHitsYLTEQ()
 {
     jint f;
+    jintVec norm;
+
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_V_LINE,
         .shape = {
@@ -29,18 +32,26 @@ static void testHitsYLTEQ()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &norm, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_OK || f != 35)
     {
         printf("`testHitsYLTEQ` fails\n");
         exit(1);
     }
+
+    if (norm.v[0] != -1 || norm.v[1] != 0)
+    {
+        printf("`testHitsYLTEQ` fails\n");
+        assert(0);
+    }
 }
 
 static void testHitsXGTLT()
 {
     jint f;
+    jintVec norm;
+
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_H_LINE,
         .shape = {
@@ -64,7 +75,7 @@ static void testHitsXGTLT()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &norm, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_OK || f != 20)
     {

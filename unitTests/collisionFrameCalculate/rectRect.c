@@ -2,10 +2,13 @@
 #include "../../collisionFrameCalculate.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 
 static void testHitsX()
 {
     jint f;
+    jintVec norm;
+
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_RECT,
         .shape = {
@@ -28,18 +31,26 @@ static void testHitsX()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &norm, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_OK || f != 25)
     {
         printf("`testHitsX` fails\n");
         exit(1);
     }
+
+    if (norm.v[0] != -1 || norm.v[1] != 0)
+    {
+        printf("`testHitsX` fails\n");
+        assert(0);
+    }
 }
 
 static void testHitsY()
 {
     jint f;
+    jintVec norm;
+
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_RECT,
         .shape = {
@@ -62,12 +73,18 @@ static void testHitsY()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &norm, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_OK || f != 40)
     {
-        printf("`testHitsX` fails\n");
+        printf("`testHitsY` fails\n");
         exit(1);
+    }
+    
+    if (norm.v[0] != 0 || norm.v[1] != 1)
+    {
+        printf("`testHitsY` fails\n");
+        assert(0);
     }
 }
 

@@ -2,10 +2,13 @@
 #include "../../collisionFrameCalculate.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 
 static void testMissesLTLTLTLT()
 {
     jint f;
+    jintVec norm;
+
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_V_LINE,
         .shape = {
@@ -30,7 +33,7 @@ static void testMissesLTLTLTLT()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &norm, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_NO_COLLISION)
     {
@@ -42,6 +45,8 @@ static void testMissesLTLTLTLT()
 static void testMissesGTGTGTGT()
 {
     jint f;
+    jintVec norm;
+
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_V_LINE,
         .shape = {
@@ -66,7 +71,7 @@ static void testMissesGTGTGTGT()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &norm, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_NO_COLLISION)
     {
@@ -78,6 +83,8 @@ static void testMissesGTGTGTGT()
 static void testHitsEQEQEQEQ()
 {
     jint f;
+    jintVec norm;
+
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_V_LINE,
         .shape = {
@@ -102,18 +109,26 @@ static void testHitsEQEQEQEQ()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &norm, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_OK || f != 0)
     {
         printf("`testHitsEQEQEQEQ` fails\n");
         exit(1);
     }
+
+    if (norm.v[0] != -1 || norm.v[1] != 0)
+    {
+        printf("`testHitsEQEQEQEQ` fails\n");
+        assert(0);
+    }
 }
 
 static void testHitsLTEQLTEQ()
 {
     jint f;
+    jintVec norm;
+
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_V_LINE,
         .shape = {
@@ -138,18 +153,26 @@ static void testHitsLTEQLTEQ()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &norm, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_OK || f != 0)
     {
         printf("`testHitsLTEQLTEQ` fails\n");
         exit(1);
     }
+
+    if (norm.v[0] != -1 || norm.v[1] != 0)
+    {
+        printf("`testHitsLTEQLTEQ` fails\n");
+        assert(0);
+    }
 }
 
 static void testMissesGTGTEQGT()
 {
     jint f;
+    jintVec norm;
+
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_V_LINE,
         .shape = {
@@ -174,7 +197,7 @@ static void testMissesGTGTEQGT()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &norm, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_NO_COLLISION)
     {
@@ -186,6 +209,8 @@ static void testMissesGTGTEQGT()
 static void testMissesEQGTGTGT()
 {
     jint f;
+    jintVec norm;
+
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_V_LINE,
         .shape = {
@@ -210,7 +235,7 @@ static void testMissesEQGTGTGT()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &norm, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_NO_COLLISION)
     {
@@ -222,6 +247,8 @@ static void testMissesEQGTGTGT()
 static void testMissesLTLTLTEQ()
 {
     jint f;
+    jintVec norm;
+
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_V_LINE,
         .shape = {
@@ -246,7 +273,7 @@ static void testMissesLTLTLTEQ()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &norm, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_NO_COLLISION)
     {
@@ -258,6 +285,8 @@ static void testMissesLTLTLTEQ()
 static void testMissesLTEQLTLT()
 {
     jint f;
+    jintVec norm;
+
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_V_LINE,
         .shape = {
@@ -282,7 +311,7 @@ static void testMissesLTEQLTLT()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &norm, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_NO_COLLISION)
     {
@@ -294,6 +323,8 @@ static void testMissesLTEQLTLT()
 static void testCalculateFrame()
 {
     jint f;
+    jintVec norm;
+
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_V_LINE,
         .shape = {
@@ -318,7 +349,7 @@ static void testCalculateFrame()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &norm, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_OK)
     {
@@ -331,11 +362,19 @@ static void testCalculateFrame()
         printf("`calculateNextCollisionFrame` fails to calclate correct frame of collision");
         exit(1);
     }
+
+    if (norm.v[0] != -1 || norm.v[1] != 0)
+    {
+        printf("`calculateNextCollisionFrame` fails\n");
+        assert(0);
+    }
 }
 
 static void testHitsLTEQLTLT()
 {
     jint f;
+    jintVec norm;
+
     collActor ca1 = {
         .type = COLL_ACTOR_TYPE_V_LINE,
         .shape = {
@@ -360,7 +399,7 @@ static void testHitsLTEQLTLT()
         .vel = {.v = {{0,0}}, .s = 1}
     };
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &norm, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_OK)
     {
@@ -372,6 +411,12 @@ static void testHitsLTEQLTLT()
     {
         printf("`testHitsLTEQLTLT` fails to calclate correct frame of collision");
         exit(1);
+    }
+
+    if (norm.v[0] != -1 || norm.v[1] != 0)
+    {
+        printf("`testHitsLTEQLTLT` fails\n");
+        assert(0);
     }
 }
 void subTestsVLineVLine()

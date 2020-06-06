@@ -26,8 +26,9 @@ void testUnhandledTypes()
         .type = COLL_ACTOR_TYPE_POINT,
         .vel = {.v = {{0,0}}, .s = 1}
     };
+    jintVec norm;
 
-    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &ca1, &ca2);
+    COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(&f, &norm, &ca1, &ca2);
 
     if (ret != COLL_FRAME_CALC_UNHANDLED_TYPES)
     {

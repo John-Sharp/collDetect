@@ -38,7 +38,7 @@ typedef struct scenario
     ((a1 == b1 && a2 == b2)||(a1 == b2 && a2 == b1))
 
 static struct scenario * scenario_global = NULL;
-static void testHandler(collActor * ca1, collActor * ca2)
+static void testHandler(collActor * ca1, collActor * ca2, const jintVec * norm)
 {
     // set the next result for this pair (by popping off
     // the pair's `resultFrames` list)

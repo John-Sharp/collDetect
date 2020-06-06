@@ -33,6 +33,7 @@ typedef struct collInfo
     collActor * actor1;
     collActor * actor2;
 
+    jintVec norm;
     jint collFrame;
 
     collGroup * collGroup;
@@ -301,7 +302,8 @@ void collEngineProcessFrame(collEngine * eng)
         // call collision handler
         schedCollN->val->collGroup->handler(
             schedCollN->val->actor1,
-            schedCollN->val->actor2
+            schedCollN->val->actor2,
+            &schedCollN->val->norm
                 );
 
         collActor * actor1 = schedCollN->val->actor1;
@@ -593,8 +595,9 @@ static void collEnginePopulateCollisionInfoForActorWithGroup(
         // objects' collisionInfo, and return orphaned
         // actor
         jint collFrame;
+        jintVec norm;
         COLL_FRAME_CALC_RET ret = calculateNextCollisionFrame(
-                &collFrame, actor, actorList->val);
+                &collFrame, &norm, actor, actorList->val);
         if (ret == COLL_FRAME_CALC_NO_COLLISION)
             continue;
         if (ret == COLL_FRAME_CALC_UNHANDLED_TYPES)
@@ -614,5 +617,6 @@ static void collEnginePopulateCollisionInfoForActorWithGroup(
         collInfo->actor2 = actorList->val;
         collInfo->collFrame = collFrame;
         collInfo->collGroup = collGroup;
+        collInfo->norm = norm;
     }
 }
