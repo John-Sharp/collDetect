@@ -446,6 +446,8 @@ COLL_FRAME_CALC_RET CNCFLineLine(
     }
 
     *collFrame = frame_coll;
+    norm->v[axis] = vrel->v.v[axis] > 0 ? -1 : 1;
+    norm->v[(axis+1)%2] = 0;
     return COLL_FRAME_CALC_OK;
 }
 
